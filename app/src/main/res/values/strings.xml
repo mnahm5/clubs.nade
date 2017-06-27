@@ -4,4 +4,11 @@
     <string name="app_phrase">Your Portal to a \nSuccessful Monash Experience</string>
     <string name="existing_Account">Use an Existing Account</string>
     <string name="create_new_account">Create a New Account</string>
+    <string name="full_name">Full Name</string>
+    <string name="username">Username</string>
+    <string name="email_address">Email Address</string>
+    <string name="password">Password</string>
+    <string name="re_type_password">Re-type Password</string>
+    <string name="create_account">Create Account</string>
+    <string name="cancel">Cancel</string>
 </resources>
