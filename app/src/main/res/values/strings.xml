@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">clubs.nade</string>
+    <string name="app_name_title">Clubs.Nade</string>
+    <string name="app_phrase">Your Portal to a \nSuccessful Monash Experience</string>
+    <string name="existing_Account">Use an Existing Account</string>
+    <string name="create_new_account">Create a New Account</string>
 </resources>
