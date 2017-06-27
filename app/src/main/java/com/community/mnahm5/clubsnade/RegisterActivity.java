@@ -52,8 +52,8 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
-    public void Cancel(View view) {
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+    public void LoginLink(View view) {
+        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
         startActivity(intent);
     }
 }
