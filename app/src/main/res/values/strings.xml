@@ -11,4 +11,10 @@
     <string name="re_type_password">Re-type Password</string>
     <string name="create_account">Create Account</string>
     <string name="cancel">Cancel</string>
+    <string name="title_activity_home">HomeActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
 </resources>
