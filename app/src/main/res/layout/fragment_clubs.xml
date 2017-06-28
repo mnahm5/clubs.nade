@@ -20,9 +20,9 @@
         android:id="@+id/btCreateClub"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:text="@string/create_club"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lvClubs"
-        android:text="@string/create_club" />
+        app:layout_constraintTop_toBottomOf="@+id/lvClubs" />
 </android.support.constraint.ConstraintLayout>

@@ -1,6 +1,7 @@
 package com.community.mnahm5.clubsnade;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,6 +10,7 @@ import android.support.v4.widget.ListViewAutoScrollHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
@@ -57,6 +59,19 @@ public class ClubsFragment extends Fragment {
 
         lvClubs.setAdapter(simpleAdapter);
 
+        final Button btCreateClubs = (Button) view.findViewById(R.id.btCreateClub);
+        btCreateClubs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CreateClub(view);
+            }
+        });
+
         return view;
+    }
+
+    public void CreateClub(View view) {
+        Intent intent = new Intent(getContext(), CreateClubActivity.class);
+        startActivity(intent);
     }
 }
