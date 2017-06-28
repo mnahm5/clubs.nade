@@ -9,13 +9,25 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.parse.Parse;
+import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.ParseObject;
+import com.parse.ParseUser;
+import com.parse.SaveCallback;
+
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.jar.Manifest;
+import java.util.ArrayList;
 
 public class CreateClubActivity extends AppCompatActivity {
+
+    private Bitmap logoBitmap = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,11 +55,11 @@ public class CreateClubActivity extends AppCompatActivity {
         if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
             Uri selectedImage = data.getData();
             try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
+                logoBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
 
                 ImageView ivLogo = (ImageView) findViewById(R.id.ivLogo);
-                ivLogo.setImageBitmap(bitmap);
-
+                ivLogo.setImageBitmap(logoBitmap);
+                ivLogo.setVisibility(View.VISIBLE);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -65,7 +77,41 @@ public class CreateClubActivity extends AppCompatActivity {
     }
 
     public void CreateClub(View view) {
-        Toast.makeText(getApplicationContext(), "Club successfully created", Toast.LENGTH_LONG).show();
+        final EditText etClubName = (EditText) findViewById(R.id.etClubName);
+        final EditText etClubDetails = (EditText) findViewById(R.id.etClubDetails);
+        final EditText etFees = (EditText) findViewById(R.id.etFees);
+        final ImageView ivLogo = (ImageView) findViewById(R.id.ivLogo);
+
+        ParseObject club = new ParseObject("Club");
+        club.put("name", etClubName.getText().toString());
+        club.put("details", etClubDetails.getText().toString());
+        club.put("fees", etFees.getText().toString());
+
+        if (logoBitmap != null) {
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            logoBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            byte[] byteArray = stream.toByteArray();
+            ParseFile file = new ParseFile("logo.png", byteArray);
+            club.put("logo", file);
+        }
+
+        ArrayList<String> admins = new ArrayList<>();
+        admins.add(ParseUser.getCurrentUser().getObjectId());
+        club.put("admins", admins);
+
+        club.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    Toast.makeText(getApplicationContext(), "Club Created", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                    startActivity(intent);
+                }
+                else {
+                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 
     private void getPhotos() {

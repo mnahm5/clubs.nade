@@ -128,7 +128,5 @@ public class HomeActivity extends AppCompatActivity
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);
         }
-        Intent intent = new Intent(getApplicationContext(), CreateClubActivity.class);
-        startActivity(intent);
     }
 }

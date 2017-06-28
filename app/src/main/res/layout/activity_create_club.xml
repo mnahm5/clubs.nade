@@ -13,7 +13,7 @@
 
         <EditText
             android:id="@+id/etClubName"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:ems="10"
             android:hint="@string/club_name"
@@ -22,11 +22,13 @@
             android:layout_marginRight="8dp"
             app:layout_constraintBottom_toTopOf="@+id/etClubDetails"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent" />
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp" />
 
         <EditText
             android:id="@+id/etClubDetails"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="200dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
@@ -37,40 +39,42 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/etClubName"
-            app:layout_constraintBottom_toTopOf="@+id/etFees"/>
+            app:layout_constraintBottom_toTopOf="@+id/etFees"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp" />
 
         <EditText
             android:id="@+id/etFees"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:ems="10"
             android:hint="@string/membership_fees"
-            android:inputType="number"
+            android:inputType="numberDecimal"
+            app:layout_constraintBottom_toTopOf="@+id/ivLogo"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etClubDetails"
-            app:layout_constraintBottom_toTopOf="@+id/ivLogo"/>
+            app:layout_constraintTop_toBottomOf="@+id/etClubDetails" />
 
         <ImageView
             android:id="@+id/ivLogo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="8dp"
+            android:contentDescription="@string/club_logo"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/btChooseLogo"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/etFees"
-            app:layout_constraintBottom_toTopOf="@+id/btChooseLogo"
-            app:srcCompat="@mipmap/ic_launcher"
-            android:contentDescription="@string/club_logo" />
+            app:srcCompat="@mipmap/ic_launcher" />
 
         <Button
             android:id="@+id/btChooseLogo"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
@@ -80,20 +84,23 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ivLogo"
-            app:layout_constraintBottom_toTopOf="@+id/btCreateClub"/>
+            app:layout_constraintBottom_toTopOf="@+id/btCreateClub"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp" />
 
         <Button
             android:id="@+id/btCreateClub"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
-            android:layout_marginTop="-6dp"
             android:onClick="CreateClub"
             android:text="@string/create_club"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btChooseLogo" />
+            app:layout_constraintTop_toBottomOf="@+id/btChooseLogo"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp" />
     </android.support.constraint.ConstraintLayout>
 </ScrollView>
