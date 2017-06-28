@@ -10,6 +10,7 @@ import android.support.v4.widget.ListViewAutoScrollHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -39,7 +40,7 @@ public class ClubsFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_clubs, container, false);
@@ -72,6 +73,7 @@ public class ClubsFragment extends Fragment {
                         else {
                             clubData.put("clubDetails", club.get("details").toString());
                         }
+                        clubData.put("id", club.getObjectId());
                         clubsData.add(clubData);
                     }
                     lvClubs.setAdapter(simpleAdapter);
@@ -90,6 +92,16 @@ public class ClubsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 CreateClub(view);
+            }
+        });
+
+        lvClubs.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String selectedClubId = clubsData.get(i).get("id");
+                Intent intent = new Intent(getContext(), ClubDetailsActivity.class);
+                intent.putExtra("clubId", selectedClubId);
+                startActivity(intent);
             }
         });
 
