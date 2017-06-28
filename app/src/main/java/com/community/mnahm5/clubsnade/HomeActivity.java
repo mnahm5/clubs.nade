@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -41,6 +43,20 @@ public class HomeActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+        // Set up home fragment
+        Fragment fragment = null;
+
+        try {
+            fragment = HomeFragment.newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
+        }
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.main_fragment, fragment, "fragment_home").commit();
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -67,15 +83,18 @@ public class HomeActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        Fragment fragment = null;
 
         if (id == R.id.nav_clubs) {
 
         }
         else if (id == R.id.nav_home) {
-
+            setTitle("Home");
+            fragment = HomeFragment.newInstance();
         }
         else if (id == R.id.nav_settings) {
-
+            setTitle("Profile");
+            fragment = ProfileFragment.newInstance();
         }
         else if (id == R.id.nav_logout) {
             ParseUser.logOutInBackground(new LogOutCallback() {
@@ -90,6 +109,12 @@ public class HomeActivity extends AppCompatActivity
                     }
                 }
             });
+        }
+
+        // If there is a fragment change...
+        if (fragment != null) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.main_fragment, fragment).commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
