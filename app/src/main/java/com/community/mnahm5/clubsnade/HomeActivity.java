@@ -86,7 +86,8 @@ public class HomeActivity extends AppCompatActivity
         Fragment fragment = null;
 
         if (id == R.id.nav_clubs) {
-
+            setTitle("Clubs");
+            fragment = ClubsFragment.newInstance();
         }
         else if (id == R.id.nav_home) {
             setTitle("Home");
