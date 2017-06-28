@@ -9,7 +9,7 @@
     tools:showIn="@layout/app_bar_home">
 
     <fragment
-        android:name="com.community.mnahm5.clubsnade.HomeFragment"
+        android:name="com.community.mnahm5.clubsnade.EventsFragment"
         android:id="@+id/main_fragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
