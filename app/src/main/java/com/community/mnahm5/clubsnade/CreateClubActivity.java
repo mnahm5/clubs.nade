@@ -77,10 +77,11 @@ public class CreateClubActivity extends AppCompatActivity {
     }
 
     public void CreateClub(View view) {
+        Toast.makeText(getApplicationContext(), "Saving Data\nPlease Wait..", Toast.LENGTH_LONG).show();
+
         final EditText etClubName = (EditText) findViewById(R.id.etClubName);
         final EditText etClubDetails = (EditText) findViewById(R.id.etClubDetails);
         final EditText etFees = (EditText) findViewById(R.id.etFees);
-        final ImageView ivLogo = (ImageView) findViewById(R.id.ivLogo);
 
         ParseObject club = new ParseObject("Club");
         club.put("name", etClubName.getText().toString());

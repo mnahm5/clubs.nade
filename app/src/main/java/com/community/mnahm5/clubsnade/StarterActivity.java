@@ -32,7 +32,7 @@ public class StarterActivity extends AppCompatActivity {
         //ParseUser.enableAutomaticUser();
         ParseACL defaultACL = new ParseACL();
         // Optionally enable public read access.
-        // defaultACL.setPublicReadAccess(true);
+        defaultACL.setPublicReadAccess(true);
         ParseACL.setDefaultACL(defaultACL, true);
 
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
