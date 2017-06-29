@@ -44,6 +44,9 @@ public class ClubsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_clubs, container, false);
+        if (container != null) {
+            container.removeAllViews();
+        }
 
         Toast.makeText(getContext(), "Getting Data\nPlease Wait..", Toast.LENGTH_LONG).show();
 
