@@ -1,6 +1,7 @@
 package com.community.mnahm5.clubsnade;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -103,12 +104,25 @@ public class ClubDetailsFragment extends Fragment {
 
     private void checkMembership(View view) {
         final Button btJoin = (Button) view.findViewById(R.id.btJoin);
+        final Button btCreateEventForClub = (Button) view.findViewById(R.id.btCreateEventForClub);
+        final Button btEditClubDetails = (Button) view.findViewById(R.id.btEditClubDetails);
 
         List<String> admins = club.getList("admins");
         for (String userId: admins) {
             if (userId.compareTo(ParseUser.getCurrentUser().getObjectId()) == 0) {
                 btJoin.setVisibility(View.INVISIBLE);
+                btCreateEventForClub.setVisibility(View.VISIBLE);
+                btEditClubDetails.setVisibility(View.VISIBLE);
             }
         }
+
+        btCreateEventForClub.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), CreateEventActivity.class);
+                intent.putExtra("clubId", clubId);
+                startActivity(intent);
+            }
+        });
     }
 }
