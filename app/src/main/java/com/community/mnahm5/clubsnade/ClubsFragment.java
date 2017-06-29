@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.ListViewAutoScrollHelper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -102,9 +103,9 @@ public class ClubsFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String selectedClubId = clubsData.get(i).get("id");
-                Intent intent = new Intent(getContext(), ClubDetailsActivity.class);
-                intent.putExtra("clubId", selectedClubId);
-                startActivity(intent);
+                Fragment fragment = null;
+                fragment = ClubDetailsFragment.newInstance(selectedClubId);
+                replaceFragment(fragment);
             }
         });
 
@@ -114,5 +115,12 @@ public class ClubsFragment extends Fragment {
     public void CreateClub(View view) {
         Intent intent = new Intent(getContext(), CreateClubActivity.class);
         startActivity(intent);
+    }
+
+    public void replaceFragment(Fragment someFragment) {
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.main_fragment, someFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 }

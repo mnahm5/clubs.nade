@@ -52,7 +52,9 @@ public class EventsFragment extends Fragment {
         }
 
         final Button btCreateEvent = (Button) view.findViewById(R.id.btCreateEvent);
-        btCreateEvent.setVisibility(View.INVISIBLE);
+        if (state != null && state.equals("Home")) {
+            btCreateEvent.setVisibility(View.INVISIBLE);
+        }
 
         final ListView lvEvents = (ListView) view.findViewById(R.id.lvEvents);
         final List<Map<String, String>> eventsData = new ArrayList<Map<String, String>>();
