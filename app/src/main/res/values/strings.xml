@@ -41,4 +41,5 @@
     <string name="go_to_club_events">Go to Club Events</string>
     <string name="club_settings">Club Settings</string>
     <string name="create_event">Create Event</string>
+    <string name="club_admins">Club Admin</string>
 </resources>

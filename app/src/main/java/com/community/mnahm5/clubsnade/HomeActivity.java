@@ -15,9 +15,16 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
 import com.parse.LogOutCallback;
 import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -39,29 +46,8 @@ public class HomeActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        // Set up home fragment
-        Fragment fragment = null;
-
-        try {
-            fragment = EventsFragment.newInstance("Home");
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
-        }
-
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.main_fragment, fragment, "fragment_events").commit();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        View header = navigationView.getHeaderView(0);
-        final TextView etNavUsername = (TextView) header.findViewById(R.id.tvNavUsername);
-        final TextView etNavEmail = (TextView) header.findViewById(R.id.tvNavEmail);
-
-        etNavUsername.setText(ParseUser.getCurrentUser().getUsername());
-        etNavEmail.setText(ParseUser.getCurrentUser().getEmail());
+        setUpDefaultFragment();
+        setupNav();
     }
 
     @Override
@@ -83,7 +69,7 @@ public class HomeActivity extends AppCompatActivity
 
         if (id == R.id.nav_clubs) {
             setTitle("Clubs");
-            fragment = ClubsFragment.newInstance();
+            fragment = ClubsFragment.newInstance("All");
         }
         else if (id == R.id.nav_home) {
             setTitle("Home");
@@ -92,6 +78,10 @@ public class HomeActivity extends AppCompatActivity
         else if (id == R.id.nav_settings) {
             setTitle("Profile");
             fragment = ProfileFragment.newInstance();
+        }
+        else if (id == R.id.nav_club_admins) {
+            setTitle("Clubs I Work For");
+            fragment = ClubsFragment.newInstance("Admin");
         }
         else if (id == R.id.nav_logout) {
             ParseUser.logOutInBackground(new LogOutCallback() {
@@ -117,6 +107,47 @@ public class HomeActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void setupNav() {
+        final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        View header = navigationView.getHeaderView(0);
+        final TextView etNavUsername = (TextView) header.findViewById(R.id.tvNavUsername);
+        final TextView etNavEmail = (TextView) header.findViewById(R.id.tvNavEmail);
+
+        etNavUsername.setText(ParseUser.getCurrentUser().getUsername());
+        etNavEmail.setText(ParseUser.getCurrentUser().getEmail());
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Club");
+        ArrayList<String> userIds = new ArrayList<String>();
+        userIds.add(ParseUser.getCurrentUser().getObjectId());
+        query.whereContainedIn("admins", userIds);
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                if (objects.size() > 0) {
+                    navigationView.getMenu().findItem(R.id.nav_club_admins).setVisible(true);
+                }
+            }
+        });
+    }
+
+    private void setUpDefaultFragment() {
+        // Set up home fragment
+        Fragment fragment = null;
+
+        try {
+            fragment = EventsFragment.newInstance("Home");
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
+        }
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.main_fragment, fragment, "fragment_events").commit();
     }
 
     private void redirect() {

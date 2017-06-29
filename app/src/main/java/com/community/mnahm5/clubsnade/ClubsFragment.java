@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.ListViewAutoScrollHelper;
@@ -21,6 +22,7 @@ import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,12 +34,28 @@ import java.util.Set;
 
 public class ClubsFragment extends Fragment {
 
+    private static final String STATE = null;
+
+    private String state = null;
+
     public ClubsFragment() {
         // Required empty public constructor
     }
 
-    public static ClubsFragment newInstance() {
-        return new ClubsFragment();
+    public static ClubsFragment newInstance(String fragmentState) {
+        ClubsFragment fragment = new ClubsFragment();
+        Bundle args = new Bundle();
+        args.putString(STATE, fragmentState);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            state = getArguments().getString(STATE);
+        }
     }
 
     @Override
@@ -64,6 +82,11 @@ public class ClubsFragment extends Fragment {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Club");
         query.whereExists("name");
         query.addAscendingOrder("name");
+        if (state.equals("Admin")) {
+            ArrayList<String> userIds = new ArrayList<String>();
+            userIds.add(ParseUser.getCurrentUser().getObjectId());
+            query.whereContainedIn("admins", userIds);
+        }
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {

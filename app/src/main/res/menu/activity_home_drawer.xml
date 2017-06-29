@@ -16,8 +16,8 @@
             android:title="@string/profile" />
 
         <item
-            android:id="@+id/nav_club_settings"
-            android:title="@string/club_settings"
+            android:id="@+id/nav_club_admins"
+            android:title="@string/club_admins"
             android:visible="false"/>
     </group>
 
