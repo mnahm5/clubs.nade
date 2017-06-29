@@ -82,11 +82,13 @@ public class CreateClubActivity extends AppCompatActivity {
         final EditText etClubName = (EditText) findViewById(R.id.etClubName);
         final EditText etClubDetails = (EditText) findViewById(R.id.etClubDetails);
         final EditText etFees = (EditText) findViewById(R.id.etFees);
+        final EditText etEmail = (EditText) findViewById(R.id.etEmail);
 
         ParseObject club = new ParseObject("Club");
         club.put("name", etClubName.getText().toString());
         club.put("details", etClubDetails.getText().toString());
         club.put("fees", etFees.getText().toString());
+        club.put("email", etEmail.getText().toString());
 
         if (logoBitmap != null) {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
