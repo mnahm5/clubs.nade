@@ -38,6 +38,7 @@ public class ClubDetailsActivity extends AppCompatActivity {
 
         final TextView tvClubDetails = (TextView) findViewById(R.id.tvClubDetails);
         final TextView tvFees = (TextView) findViewById(R.id.tvFees);
+        final TextView tvEmail = (TextView) findViewById(R.id.tvEmail);
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Club");
         query.whereEqualTo("objectId", clubId);
@@ -50,6 +51,7 @@ public class ClubDetailsActivity extends AppCompatActivity {
                     tvClubDetails.setText(club.getString("details"));
                     String fees = tvFees.getText().toString() + " ";
                     tvFees.setText(fees.concat(club.getString("fees")));
+                    tvEmail.setText(club.getString("email"));
                     showClubLogo();
                     checkMembership();
                 }
