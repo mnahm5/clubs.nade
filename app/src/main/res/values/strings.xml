@@ -48,6 +48,10 @@
     <string name="location">Location</string>
     <string name="event_details">Event Details</string>
     <string name="event_fees">Event Fees</string>
+    <string name="event_name">Event Name</string>
+    <string name="event_logo">Event Logo</string>
+    <string name="choose_event_logo">Choose event logo</string>
+    <string name="pick_date">Pick Date</string>
 
     <string-array name="access_array">
         <item>None Selected</item>
