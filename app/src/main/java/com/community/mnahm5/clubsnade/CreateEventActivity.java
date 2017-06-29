@@ -10,15 +10,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.SaveCallback;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -26,6 +30,7 @@ public class CreateEventActivity extends AppCompatActivity {
 
     private ParseObject club;
     private Bitmap eventLogoBitmap = null;
+    private Spinner spEventAccess;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +39,7 @@ public class CreateEventActivity extends AppCompatActivity {
 
         setup();
 
-        Spinner spEventAccess = (Spinner) findViewById(R.id.spEventAccess);
+        spEventAccess = (Spinner) findViewById(R.id.spEventAccess);
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.access_array, android.R.layout.simple_spinner_item);
@@ -101,6 +106,48 @@ public class CreateEventActivity extends AppCompatActivity {
         }
         else {
             getPhotos();
+        }
+    }
+
+    public void CreateEvent(View view) {
+        if (!spEventAccess.getSelectedItem().equals("None Selected")) {
+            final EditText etEventName = (EditText) findViewById(R.id.etEventName);
+            final EditText etEventDetails = (EditText) findViewById(R.id.etEventDetails);
+            final EditText etLocation = (EditText) findViewById(R.id.etEventLocation);
+            final EditText etFees = (EditText) findViewById(R.id.etEventFees);
+
+            ParseObject event = new ParseObject("Event");
+            event.put("name", etEventName.getText().toString());
+            event.put("details", etEventDetails.getText().toString());
+            event.put("location", etLocation.getText().toString());
+            event.put("fees", etFees.getText().toString());
+            event.put("access", spEventAccess.getSelectedItem());
+            event.put("clubId", club.getObjectId());
+
+            if (eventLogoBitmap != null) {
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                eventLogoBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                byte[] byteArray = stream.toByteArray();
+                ParseFile file = new ParseFile("logo.png", byteArray);
+                event.put("logo", file);
+            }
+
+            event.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+                        Toast.makeText(getApplicationContext(), "Event Saved", Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                        startActivity(intent);
+                    }
+                    else {
+                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+        }
+        else {
+            Toast.makeText(getApplicationContext(), "Need select access", Toast.LENGTH_LONG).show();
         }
     }
 
