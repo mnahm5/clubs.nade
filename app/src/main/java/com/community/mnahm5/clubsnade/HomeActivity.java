@@ -43,7 +43,7 @@ public class HomeActivity extends AppCompatActivity
         Fragment fragment = null;
 
         try {
-            fragment = EventsFragment.newInstance();
+            fragment = EventsFragment.newInstance("Home");
         } catch (Exception e) {
             e.printStackTrace();
 
@@ -87,7 +87,7 @@ public class HomeActivity extends AppCompatActivity
         }
         else if (id == R.id.nav_home) {
             setTitle("Home");
-            fragment = EventsFragment.newInstance();
+            fragment = EventsFragment.newInstance("Home");
         }
         else if (id == R.id.nav_settings) {
             setTitle("Profile");
