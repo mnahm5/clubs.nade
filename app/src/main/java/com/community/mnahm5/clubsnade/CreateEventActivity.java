@@ -31,6 +31,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import android.text.format.DateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -218,7 +219,7 @@ public class CreateEventActivity extends AppCompatActivity implements
     }
 
     public void CreateEvent(View view) {
-        if (!spEventAccess.getSelectedItem().equals("None Selected") && startDate != null) {
+        if (!spEventAccess.getSelectedItem().equals("None Selected") && startDate != null && endDate != null) {
             final EditText etEventName = (EditText) findViewById(R.id.etEventName);
             final EditText etEventDetails = (EditText) findViewById(R.id.etEventDetails);
             final EditText etLocation = (EditText) findViewById(R.id.etEventLocation);
@@ -240,6 +241,9 @@ public class CreateEventActivity extends AppCompatActivity implements
                 event.put("logo", file);
             }
 
+            event.put("startDate", startDate.getTime());
+            event.put("endDate", endDate.getTime());
+
             event.saveInBackground(new SaveCallback() {
                 @Override
                 public void done(ParseException e) {
@@ -253,6 +257,9 @@ public class CreateEventActivity extends AppCompatActivity implements
                     }
                 }
             });
+        }
+        else if (startDate == null || endDate == null) {
+            Toast.makeText(getApplicationContext(), "Start and End times need to picked", Toast.LENGTH_LONG).show();
         }
         else {
             Toast.makeText(getApplicationContext(), "Need select access", Toast.LENGTH_LONG).show();
