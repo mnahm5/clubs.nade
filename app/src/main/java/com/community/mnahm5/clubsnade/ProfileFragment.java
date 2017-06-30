@@ -1,6 +1,7 @@
 package com.community.mnahm5.clubsnade;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -65,11 +66,9 @@ public class ProfileFragment extends Fragment {
         etStudentId = (EditText) view.findViewById(R.id.etStudentId);
         etEmail = (EditText) view.findViewById(R.id.etEmail);
         btEdit = (Button) view.findViewById(R.id.btEdit);
-        final Button btChangePassword = (Button) view.findViewById(R.id.btChangePassword);
 
         if (!ParseUser.getCurrentUser().getObjectId().equals(userId)) {
             btEdit.setVisibility(View.INVISIBLE);
-            btChangePassword.setVisibility(View.INVISIBLE);
         }
 
         etFullName.setEnabled(false);
@@ -109,13 +108,6 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        btChangePassword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ChangePassword(view);
-            }
-        });
-
         return view;
     }
 
@@ -146,9 +138,5 @@ public class ProfileFragment extends Fragment {
                 }
             }
         });
-    }
-
-    public void ChangePassword(View view) {
-
     }
 }
