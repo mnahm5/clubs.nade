@@ -56,6 +56,8 @@
     <string name="pick_start_time">Pick Start Time</string>
     <string name="pick_end_time">Pick End Time</string>
     <string name="student_id">Student ID</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="change_password">Change Password</string>
 
     <string-array name="access_array">
         <item>None Selected</item>
