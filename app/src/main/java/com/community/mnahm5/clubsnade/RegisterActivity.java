@@ -37,6 +37,7 @@ public class RegisterActivity extends AppCompatActivity {
     public void Register(View view) {
         final EditText etFullName = (EditText) findViewById(R.id.etFullName);
         final EditText etUsername = (EditText) findViewById(R.id.etUsername);
+        final EditText etStudentId = (EditText) findViewById(R.id.etStudentId);
         final EditText etEmail = (EditText) findViewById(R.id.etEmail);
         final EditText etPassword = (EditText) findViewById(R.id.etPassword);
         final EditText etPassword2 = (EditText) findViewById(R.id.etPassword2);
@@ -45,6 +46,7 @@ public class RegisterActivity extends AppCompatActivity {
             ParseUser user = new ParseUser();
             user.setUsername(etUsername.getText().toString());
             user.setPassword(etPassword.getText().toString());
+            user.put("studentId", etStudentId.getText().toString());
             user.setEmail(etEmail.getText().toString());
             user.put("fullName", etFullName.getText().toString());
             user.signUpInBackground(new SignUpCallback() {
