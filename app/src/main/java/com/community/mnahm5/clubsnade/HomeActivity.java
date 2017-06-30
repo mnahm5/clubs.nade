@@ -77,7 +77,7 @@ public class HomeActivity extends AppCompatActivity
         }
         else if (id == R.id.nav_settings) {
             setTitle("Profile");
-            fragment = ProfileFragment.newInstance();
+            fragment = ProfileFragment.newInstance(ParseUser.getCurrentUser().getObjectId());
         }
         else if (id == R.id.nav_club_admins) {
             setTitle("Clubs I Work For");

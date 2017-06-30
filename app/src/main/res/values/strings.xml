@@ -58,6 +58,7 @@
     <string name="student_id">Student ID</string>
     <string name="edit_profile">Edit Profile</string>
     <string name="change_password">Change Password</string>
+    <string name="save_changes">Save Changes</string>
 
     <string-array name="access_array">
         <item>None Selected</item>
