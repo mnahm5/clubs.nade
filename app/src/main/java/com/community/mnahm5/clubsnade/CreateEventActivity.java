@@ -1,5 +1,7 @@
 package com.community.mnahm5.clubsnade;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -10,9 +12,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
@@ -24,13 +29,22 @@ import com.parse.SaveCallback;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import android.text.format.DateFormat;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
-public class CreateEventActivity extends AppCompatActivity {
+public class CreateEventActivity extends AppCompatActivity implements
+        DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
 
     private ParseObject club;
     private Bitmap eventLogoBitmap = null;
     private Spinner spEventAccess;
+
+    private Calendar startDate = null;
+    private Calendar endDate = null;
+    private boolean startTimePicking = false;
+    private boolean endTimePicking = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +93,100 @@ public class CreateEventActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+        if (startTimePicking) {
+            int hour, minute;
+            if (startDate == null) {
+                Calendar c = Calendar.getInstance();
+                hour = c.get(Calendar.HOUR_OF_DAY);
+                minute = c.get(Calendar.MINUTE);
+            }
+            else {
+                hour = startDate.get(Calendar.HOUR_OF_DAY);
+                minute = startDate.get(Calendar.MINUTE);
+            }
+
+            startDate = Calendar.getInstance();
+            startDate.set(Calendar.YEAR, i);
+            startDate.set(Calendar.MONTH, i1);
+            startDate.set(Calendar.DAY_OF_MONTH, i2);
+
+            TimePickerDialog timePickerDialog = new TimePickerDialog(
+                    CreateEventActivity.this,
+                    CreateEventActivity.this,
+                    hour,
+                    minute,
+                    DateFormat.is24HourFormat(this)
+            );
+            timePickerDialog.show();
+        }
+        else if (endTimePicking) {
+            int hour, minute;
+            if (endDate == null && startDate == null) {
+                Calendar c = Calendar.getInstance();
+                hour = c.get(Calendar.HOUR_OF_DAY);
+                minute = c.get(Calendar.MINUTE);
+            }
+            else if (endDate == null) {
+                hour = startDate.get(Calendar.HOUR_OF_DAY);
+                minute = startDate.get(Calendar.MINUTE);
+            }
+            else {
+                hour = endDate.get(Calendar.HOUR_OF_DAY);
+                minute = endDate.get(Calendar.MINUTE);
+            }
+
+            endDate = Calendar.getInstance();
+            endDate.set(Calendar.YEAR, i);
+            endDate.set(Calendar.MONTH, i1);
+            endDate.set(Calendar.DAY_OF_MONTH, i2);
+
+            TimePickerDialog timePickerDialog = new TimePickerDialog(
+                    CreateEventActivity.this,
+                    CreateEventActivity.this,
+                    hour,
+                    minute,
+                    DateFormat.is24HourFormat(this)
+            );
+            timePickerDialog.show();
+        }
+    }
+
+    @Override
+    public void onTimeSet(TimePicker timePicker, int i, int i1) {
+        if (startTimePicking) {
+            startDate.set(Calendar.HOUR_OF_DAY, i);
+            startDate.set(Calendar.MINUTE, i1);
+
+            final Button btStartPickDate = (Button) findViewById(R.id.btStartPickDate);
+            String btText = String.format(Locale.ENGLISH, "%02d-%02d-%02d %02d:%02d",
+                    startDate.get(Calendar.DAY_OF_MONTH),
+                    startDate.get(Calendar.MONTH) + 1,
+                    startDate.get(Calendar.YEAR),
+                    startDate.get(Calendar.HOUR_OF_DAY),
+                    startDate.get(Calendar.MINUTE)
+            );
+            btStartPickDate.setText(btText);
+            startTimePicking = false;
+        }
+        else if (endTimePicking) {
+            endDate.set(Calendar.HOUR_OF_DAY, i);
+            endDate.set(Calendar.MINUTE, i1);
+
+            final Button btEndPickDate = (Button) findViewById(R.id.btEndPickDate);
+            String btText = String.format(Locale.ENGLISH, "%02d-%02d-%02d %02d:%02d",
+                    endDate.get(Calendar.DAY_OF_MONTH),
+                    endDate.get(Calendar.MONTH) + 1,
+                    endDate.get(Calendar.YEAR),
+                    endDate.get(Calendar.HOUR_OF_DAY),
+                    endDate.get(Calendar.MINUTE)
+            );
+            btEndPickDate.setText(btText);
+            endTimePicking = false;
+        }
+    }
+
     private void setup() {
         final String clubId = getIntent().getStringExtra("clubId");
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Club");
@@ -110,7 +218,7 @@ public class CreateEventActivity extends AppCompatActivity {
     }
 
     public void CreateEvent(View view) {
-        if (!spEventAccess.getSelectedItem().equals("None Selected")) {
+        if (!spEventAccess.getSelectedItem().equals("None Selected") && startDate != null) {
             final EditText etEventName = (EditText) findViewById(R.id.etEventName);
             final EditText etEventDetails = (EditText) findViewById(R.id.etEventDetails);
             final EditText etLocation = (EditText) findViewById(R.id.etEventLocation);
@@ -154,5 +262,60 @@ public class CreateEventActivity extends AppCompatActivity {
     private void getPhotos() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, 1);
+    }
+
+    public void PickEndTime(View view) {
+        int year, month, day;
+        if (endDate == null && startDate == null) {
+            Calendar c = Calendar.getInstance();
+            year = c.get(Calendar.YEAR);
+            month = c.get(Calendar.MONTH);
+            day = c.get(Calendar.DAY_OF_MONTH);
+        }
+        else if (endDate == null) {
+            year = startDate.get(Calendar.YEAR);
+            month = startDate.get(Calendar.MONTH);
+            day = startDate.get(Calendar.DAY_OF_MONTH);
+        }
+        else {
+            year = endDate.get(Calendar.YEAR);
+            month = endDate.get(Calendar.MONTH);
+            day = endDate.get(Calendar.DAY_OF_MONTH);
+        }
+
+        endTimePicking = true;
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                CreateEventActivity.this,
+                CreateEventActivity.this,
+                year,
+                month,
+                day);
+        datePickerDialog.show();
+    }
+
+    public void PickStartTime(View view) {
+        int year, month, day;
+        if (startDate == null) {
+            Calendar c = Calendar.getInstance();
+            year = c.get(Calendar.YEAR);
+            month = c.get(Calendar.MONTH);
+            day = c.get(Calendar.DAY_OF_MONTH);
+        }
+        else {
+            year = startDate.get(Calendar.YEAR);
+            month = startDate.get(Calendar.MONTH);
+            day = startDate.get(Calendar.DAY_OF_MONTH);
+        }
+
+        startTimePicking = true;
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                CreateEventActivity.this,
+                CreateEventActivity.this,
+                year,
+                month,
+                day);
+        datePickerDialog.show();
     }
 }

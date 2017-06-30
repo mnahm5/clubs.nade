@@ -51,7 +51,10 @@
     <string name="event_name">Event Name</string>
     <string name="event_logo">Event Logo</string>
     <string name="choose_event_logo">Choose event logo</string>
-    <string name="pick_date">Pick Date</string>
+    <string name="pick_date">Pick Date and time</string>
+    <string name="pick_time">Pick Time</string>
+    <string name="pick_start_time">Pick Start Time</string>
+    <string name="pick_end_time">Pick End Time</string>
 
     <string-array name="access_array">
         <item>None Selected</item>
