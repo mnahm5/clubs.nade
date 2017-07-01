@@ -79,6 +79,10 @@ public class HomeActivity extends AppCompatActivity
             setTitle("Profile");
             fragment = ProfileFragment.newInstance(ParseUser.getCurrentUser().getObjectId());
         }
+        else if (id == R.id.nav_my_clubs) {
+            setTitle("My Clubs");
+            fragment = ClubsFragment.newInstance("Member");
+        }
         else if (id == R.id.nav_club_admins) {
             setTitle("Clubs I Work For");
             fragment = ClubsFragment.newInstance("Admin");

@@ -82,7 +82,7 @@ public class ClubsFragment extends Fragment {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Club");
         query.whereExists("name");
         query.addAscendingOrder("name");
-        if (state.equals("Admin")) {
+        if (state.equals("Admin") || state.equals("Member")) {
             ArrayList<String> userIds = new ArrayList<String>();
             userIds.add(ParseUser.getCurrentUser().getObjectId());
             query.whereContainedIn("admins", userIds);

@@ -64,6 +64,7 @@
     <string name="retype_new_password">Retype New Password</string>
     <string name="save_new_password">Save new password</string>
     <string name="update_club">Update Club Details</string>
+    <string name="my_clubs">My Clubs</string>
 
     <string-array name="access_array">
         <item>None Selected</item>
