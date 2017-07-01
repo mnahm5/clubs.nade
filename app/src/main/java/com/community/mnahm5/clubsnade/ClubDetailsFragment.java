@@ -124,5 +124,14 @@ public class ClubDetailsFragment extends Fragment {
                 startActivity(intent);
             }
         });
+
+        btEditClubDetails.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), CreateClubActivity.class);
+                intent.putExtra("clubId", clubId);
+                startActivity(intent);
+            }
+        });
     }
 }
