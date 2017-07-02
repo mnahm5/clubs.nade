@@ -3,6 +3,7 @@ package com.community.mnahm5.clubsnade;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,7 +62,7 @@ public class EventsFragment extends Fragment {
         }
 
         final Button btCreateEvent = (Button) view.findViewById(R.id.btCreateEvent);
-        if (state != null && state.equals("Home")) {
+        if (state != null && (state.equals("Home") || state.equals("All"))) {
             btCreateEvent.setVisibility(View.INVISIBLE);
         }
 
@@ -72,6 +74,13 @@ public class EventsFragment extends Fragment {
 
     private void getClubs() {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Club");
+
+        if (state != null && state.equals("Home")) {
+            List<String> userIds = new ArrayList<String>();
+            userIds.add(ParseUser.getCurrentUser().getObjectId());
+            query.whereContainedIn("admins", userIds);
+        }
+
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
@@ -95,6 +104,12 @@ public class EventsFragment extends Fragment {
     private void getEvents() {
         if (clubs != null) {
             ParseQuery<ParseObject> query = ParseQuery.getQuery("Event");
+
+            if (state != null && state.equals("Home")) {
+                List<String> clubIds = new ArrayList<String>(clubs.keySet());
+                query.whereContainedIn("clubId", clubIds);
+            }
+
             query.findInBackground(new FindCallback<ParseObject>() {
                 @Override
                 public void done(List<ParseObject> objects, ParseException e) {

@@ -68,7 +68,7 @@ public class HomeActivity extends AppCompatActivity
         Fragment fragment = null;
 
         if (id == R.id.nav_clubs) {
-            setTitle("Clubs");
+            setTitle("All Clubs");
             fragment = ClubsFragment.newInstance("All");
         }
         else if (id == R.id.nav_home) {
@@ -82,6 +82,10 @@ public class HomeActivity extends AppCompatActivity
         else if (id == R.id.nav_my_clubs) {
             setTitle("My Clubs");
             fragment = ClubsFragment.newInstance("Member");
+        }
+        else if (id == R.id.nav_events) {
+            setTitle("All Events");
+            fragment = EventsFragment.newInstance("All");
         }
         else if (id == R.id.nav_club_admins) {
             setTitle("Clubs I Work For");
