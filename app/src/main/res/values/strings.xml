@@ -43,7 +43,7 @@
     <string name="create_event">Create Event</string>
     <string name="club_admins">Club Admin</string>
     <string name="title_activity_create_event">CreateEvent</string>
-    <string name="create_event_for_club">create event for club</string>
+    <string name="create_event_for_club">Create Event for Club</string>
     <string name="edit_club_details">Edit Club Details</string>
     <string name="location">Location</string>
     <string name="event_details">Event Details</string>
@@ -65,6 +65,7 @@
     <string name="save_new_password">Save new password</string>
     <string name="update_club">Update Club Details</string>
     <string name="my_clubs">My Clubs</string>
+    <string name="change_admins">Change Admins</string>
 
     <string-array name="access_array">
         <item>None Selected</item>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/edit_details"
+        android:title="@string/edit_club_details"
+        />
+
+    <item
+        android:id="@+id/change_admins"
+        android:title="@string/change_admins"
+        />
+
+    <item
+        android:id="@+id/create_event"
+        android:title="@string/create_event_for_club"
+        />
+
+</menu>

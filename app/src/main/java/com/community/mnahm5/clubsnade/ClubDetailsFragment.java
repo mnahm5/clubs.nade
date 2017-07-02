@@ -8,6 +8,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -85,6 +88,31 @@ public class ClubDetailsFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+
+        inflater.inflate(R.menu.menu_club_details_fragment_admin_options, menu);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if (item.getItemId() == R.id.edit_details) {
+            Intent intent = new Intent(getContext(), CreateClubActivity.class);
+            intent.putExtra("clubId", clubId);
+            startActivity(intent);
+        }
+        else if (item.getItemId() == R.id.create_event) {
+            Intent intent = new Intent(getContext(), CreateEventActivity.class);
+            intent.putExtra("clubId", clubId);
+            startActivity(intent);
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     private void showClubLogo(View view) {
         final ImageView ivLogo = (ImageView) view.findViewById(R.id.ivLogo);
 
@@ -104,34 +132,13 @@ public class ClubDetailsFragment extends Fragment {
 
     private void checkMembership(View view) {
         final Button btJoin = (Button) view.findViewById(R.id.btJoin);
-        final Button btCreateEventForClub = (Button) view.findViewById(R.id.btCreateEventForClub);
-        final Button btEditClubDetails = (Button) view.findViewById(R.id.btEditClubDetails);
 
         List<String> admins = club.getList("admins");
         for (String userId: admins) {
             if (userId.compareTo(ParseUser.getCurrentUser().getObjectId()) == 0) {
                 btJoin.setVisibility(View.INVISIBLE);
-                btCreateEventForClub.setVisibility(View.VISIBLE);
-                btEditClubDetails.setVisibility(View.VISIBLE);
+                setHasOptionsMenu(true);
             }
         }
-
-        btCreateEventForClub.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getContext(), CreateEventActivity.class);
-                intent.putExtra("clubId", clubId);
-                startActivity(intent);
-            }
-        });
-
-        btEditClubDetails.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getContext(), CreateClubActivity.class);
-                intent.putExtra("clubId", clubId);
-                startActivity(intent);
-            }
-        });
     }
 }
