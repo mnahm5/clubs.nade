@@ -101,32 +101,6 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp" />
 
-        <Button
-            android:id="@+id/btCreateEventForClub"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="8dp"
-            android:text="@string/create_event_for_club"
-            android:visibility="invisible"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btJoin" />
-
-        <Button
-            android:id="@+id/btEditClubDetails"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="8dp"
-            android:text="@string/edit_club_details"
-            android:visibility="invisible"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btCreateEventForClub" />
-
 
     </android.support.constraint.ConstraintLayout>
 </ScrollView>

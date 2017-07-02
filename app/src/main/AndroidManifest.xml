@@ -27,6 +27,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".CreateClubActivity" />
         <activity android:name=".CreateEventActivity" />
+        <activity android:name=".ChangeAdminsActivity"></activity>
     </application>
 
 </manifest>

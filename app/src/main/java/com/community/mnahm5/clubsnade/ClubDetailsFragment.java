@@ -109,6 +109,11 @@ public class ClubDetailsFragment extends Fragment {
             intent.putExtra("clubId", clubId);
             startActivity(intent);
         }
+        else if (item.getItemId() == R.id.change_admins) {
+            Intent intent = new Intent(getContext(), ChangeAdminsActivity.class);
+            intent.putExtra("clubId", clubId);
+            startActivity(intent);
+        }
 
         return super.onOptionsItemSelected(item);
     }
