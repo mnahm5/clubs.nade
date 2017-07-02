@@ -9,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
@@ -19,6 +20,7 @@ import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class ChangeAdminsActivity extends AppCompatActivity {
 
@@ -31,27 +33,6 @@ public class ChangeAdminsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_change_admins);
 
         getClub();
-
-        ListView lvAdmins = (ListView) findViewById(R.id.lvAdmins);
-        lvAdmins.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
-                ChangeAdminsActivity.this,
-                android.R.layout.simple_list_item_checked,
-                lvData
-                );
-        lvAdmins.setAdapter(arrayAdapter);
-        lvAdmins.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                CheckedTextView checkedTextView = (CheckedTextView) view;
-                if (checkedTextView.isChecked()) {
-                    Toast.makeText(getApplicationContext(), "Row checked", Toast.LENGTH_LONG).show();
-                }
-                else {
-                    Toast.makeText(getApplicationContext(), "Row unchecked", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
     }
 
     private void getClub() {
@@ -86,7 +67,13 @@ public class ChangeAdminsActivity extends AppCompatActivity {
                 @Override
                 public void done(List<ParseUser> objects, ParseException e) {
                     if (objects.size() > 0 && e == null) {
-                        Toast.makeText(getApplicationContext(), objects.get(0).getUsername(), Toast.LENGTH_LONG).show();
+                        for (ParseUser user: objects) {
+                            lvData.add(String.format(Locale.ENGLISH, "%s (%s)", user.getUsername(), user.get("fullName").toString()));
+                        }
+                        for (int i = 0; i < 20; i++) {
+                            lvData.add("Stuff");
+                        }
+                        ShowAdminList();
                     }
                     else if (e != null) {
                         Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
@@ -97,5 +84,40 @@ public class ChangeAdminsActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    private void ShowAdminList() {
+        ListView lvAdmins = (ListView) findViewById(R.id.lvAdmins);
+        lvAdmins.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+                ChangeAdminsActivity.this,
+                android.R.layout.simple_list_item_checked,
+                lvData
+        );
+        lvAdmins.setAdapter(arrayAdapter);
+        lvAdmins.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                CheckedTextView checkedTextView = (CheckedTextView) view;
+                if (checkedTextView.isChecked()) {
+                    Toast.makeText(getApplicationContext(), "Row checked", Toast.LENGTH_LONG).show();
+                }
+                else {
+                    Toast.makeText(getApplicationContext(), "Row unchecked", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        ListView lvSearchResults = (ListView) findViewById(R.id.lvSearchResults);
+        List<String> searchResults = new ArrayList<String>();
+        for (int i = 0; i < 20; i++) {
+            searchResults.add("Item");
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                ChangeAdminsActivity.this,
+                android.R.layout.simple_list_item_1,
+                searchResults
+        );
+        lvSearchResults.setAdapter(adapter);
     }
 }

@@ -66,6 +66,7 @@
     <string name="update_club">Update Club Details</string>
     <string name="my_clubs">My Clubs</string>
     <string name="change_admins">Change Admins</string>
+    <string name="search_users">Search Users</string>
 
     <string-array name="access_array">
         <item>None Selected</item>
