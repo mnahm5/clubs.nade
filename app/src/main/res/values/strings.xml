@@ -67,6 +67,9 @@
     <string name="my_clubs">My Clubs</string>
     <string name="change_admins">Change Admins</string>
     <string name="search_users">Search Users</string>
+    <string name="event_fees_">Event Fees:</string>
+    <string name="for_access">For</string>
+    <string name="sign_up_for_event">Sign up for event</string>
 
     <string-array name="access_array">
         <item>None Selected</item>

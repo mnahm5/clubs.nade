@@ -3,10 +3,12 @@ package com.community.mnahm5.clubsnade;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -64,7 +66,7 @@ public class EventsFragment extends Fragment {
         if (container != null) {
             container.removeAllViews();
         }
-        
+
         lvEvents = (ListView) view.findViewById(R.id.lvEvents);
         getClubs();
 
@@ -153,6 +155,23 @@ public class EventsFragment extends Fragment {
                     new int[] {android.R.id.text1, android.R.id.text2}
             );
             lvEvents.setAdapter(simpleAdapter);
+
+            lvEvents.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    String eventId = events.get(i).getObjectId();
+                    Fragment fragment = null;
+                    fragment = EventDetailsFragment.newInstance(eventId);
+                    replaceFragment(fragment);
+                }
+            });
         }
+    }
+
+    public void replaceFragment(Fragment someFragment) {
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.main_fragment, someFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 }
