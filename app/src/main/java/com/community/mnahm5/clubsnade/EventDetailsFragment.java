@@ -8,6 +8,9 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.TextViewCompat;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -21,6 +24,7 @@ import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import org.w3c.dom.Text;
 
@@ -65,6 +69,27 @@ public class EventDetailsFragment extends Fragment {
         getEventDetails(view);
 
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+
+        inflater.inflate(R.menu.menu_event_details_fragment, menu);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if (item.getItemId() == R.id.edit_event) {
+
+        }
+        else if (item.getItemId() == R.id.add_users_to_event) {
+
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void getEventDetails(final View view) {
@@ -141,6 +166,7 @@ public class EventDetailsFragment extends Fragment {
                                 endTime.get(Calendar.MINUTE)
                         ));
                     }
+                    checkMemberShip();
                 }
                 else if (e != null) {
                     Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
@@ -155,5 +181,26 @@ public class EventDetailsFragment extends Fragment {
     private boolean checkIfSameDay (Calendar cal1, Calendar cal2) {
         return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
                 cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
+    }
+
+    private void checkMemberShip() {
+        if (event != null) {
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("Club");
+            query.whereEqualTo("objectId", event.get("clubId").toString());
+            query.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> objects, ParseException e) {
+                    if (objects.size() > 0 && e == null) {
+                        List<String> admins = objects.get(0).getList("admins");
+                        if (admins.contains(ParseUser.getCurrentUser().getObjectId())) {
+                            setHasOptionsMenu(true);
+                        }
+                    }
+                    else if (e != null) {
+                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+        }
     }
 }
