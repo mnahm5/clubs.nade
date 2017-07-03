@@ -73,7 +73,7 @@ public class HomeActivity extends AppCompatActivity
         }
         else if (id == R.id.nav_home) {
             setTitle("Home");
-            fragment = EventsFragment.newInstance("Home");
+            fragment = EventsFragment.newInstance("Home", "Id");
         }
         else if (id == R.id.nav_settings) {
             setTitle("Profile");
@@ -85,7 +85,7 @@ public class HomeActivity extends AppCompatActivity
         }
         else if (id == R.id.nav_events) {
             setTitle("All Events");
-            fragment = EventsFragment.newInstance("All");
+            fragment = EventsFragment.newInstance("All", "Id");
         }
         else if (id == R.id.nav_club_admins) {
             setTitle("Clubs I Work For");
@@ -147,7 +147,7 @@ public class HomeActivity extends AppCompatActivity
         Fragment fragment = null;
 
         try {
-            fragment = EventsFragment.newInstance("Home");
+            fragment = EventsFragment.newInstance("Home", "Id");
         } catch (Exception e) {
             e.printStackTrace();
 

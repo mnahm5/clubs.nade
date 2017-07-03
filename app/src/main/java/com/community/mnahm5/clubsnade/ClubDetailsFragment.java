@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -85,6 +86,14 @@ public class ClubDetailsFragment extends Fragment {
             }
         });
 
+        Button btEvents = (Button) view.findViewById(R.id.btEvents);
+        btEvents.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                GoToEvents();
+            }
+        });
+
         return view;
     }
 
@@ -116,6 +125,19 @@ public class ClubDetailsFragment extends Fragment {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void GoToEvents() {
+        Fragment fragment = null;
+        fragment = EventsFragment.newInstance("Club", clubId);
+        replaceFragment(fragment);
+    }
+
+    private void replaceFragment(Fragment someFragment) {
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.main_fragment, someFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
     private void showClubLogo(View view) {

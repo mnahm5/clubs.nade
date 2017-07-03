@@ -25,9 +25,11 @@ import java.util.Map;
 
 public class EventsFragment extends Fragment {
 
-    private static final String STATE = null;
+    private static final String STATE = "state";
+    private static final String CLUB_ID = "clubId";
 
     private String state = null;
+    private String clubId = null;
     private HashMap<String, ParseObject> clubs = null;
     private List<ParseObject> events = null;
     private ListView lvEvents;
@@ -36,10 +38,11 @@ public class EventsFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static EventsFragment newInstance(String fragmentState) {
+    public static EventsFragment newInstance(String fragmentState, String fragmentClubId) {
         EventsFragment fragment = new EventsFragment();
         Bundle args = new Bundle();
         args.putString(STATE, fragmentState);
+        args.putString(CLUB_ID, fragmentClubId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -49,6 +52,7 @@ public class EventsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             state = getArguments().getString(STATE);
+            clubId = getArguments().getString(CLUB_ID);
         }
     }
 
@@ -60,12 +64,7 @@ public class EventsFragment extends Fragment {
         if (container != null) {
             container.removeAllViews();
         }
-
-        final Button btCreateEvent = (Button) view.findViewById(R.id.btCreateEvent);
-        if (state != null && (state.equals("Home") || state.equals("All"))) {
-            btCreateEvent.setVisibility(View.INVISIBLE);
-        }
-
+        
         lvEvents = (ListView) view.findViewById(R.id.lvEvents);
         getClubs();
 
@@ -79,6 +78,9 @@ public class EventsFragment extends Fragment {
             List<String> userIds = new ArrayList<String>();
             userIds.add(ParseUser.getCurrentUser().getObjectId());
             query.whereContainedIn("admins", userIds);
+        }
+        else if (state != null && state.equals("Club")) {
+            query.whereEqualTo("objectId", clubId);
         }
 
         query.findInBackground(new FindCallback<ParseObject>() {
@@ -105,9 +107,13 @@ public class EventsFragment extends Fragment {
         if (clubs != null) {
             ParseQuery<ParseObject> query = ParseQuery.getQuery("Event");
 
-            if (state != null && state.equals("Home")) {
+            if (state != null && !state.equals("All")) {
                 List<String> clubIds = new ArrayList<String>(clubs.keySet());
                 query.whereContainedIn("clubId", clubIds);
+            }
+
+            if (state != null && state.equals("Club")) {
+                getActivity().setTitle(clubs.get(clubId).get("name").toString() + " - Events");
             }
 
             query.findInBackground(new FindCallback<ParseObject>() {
