@@ -38,9 +38,25 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ivEventLogo"
-            app:layout_constraintBottom_toTopOf="@+id/tvEventFees"
+            app:layout_constraintBottom_toTopOf="@+id/tvEventTime"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp" />
+
+        <TextView
+            android:id="@+id/tvEventTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/event_time"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            app:layout_constraintBottom_toTopOf="@+id/tvEventFees"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvEventDetails" />
 
         <TextView
             android:id="@+id/tvEventFees"
@@ -53,7 +69,7 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvEventDetails"
+            app:layout_constraintTop_toBottomOf="@+id/tvEventTime"
             app:layout_constraintBottom_toTopOf="@+id/tvEventAccess"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp" />
@@ -87,5 +103,6 @@
             app:layout_constraintTop_toBottomOf="@+id/tvEventAccess"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp" />
+
     </android.support.constraint.ConstraintLayout>
 </ScrollView>

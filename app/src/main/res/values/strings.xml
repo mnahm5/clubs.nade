@@ -70,6 +70,7 @@
     <string name="event_fees_">Event Fees:</string>
     <string name="for_access">For</string>
     <string name="sign_up_for_event">Sign up for event</string>
+    <string name="event_time">Event Time</string>
 
     <string-array name="access_array">
         <item>None Selected</item>
