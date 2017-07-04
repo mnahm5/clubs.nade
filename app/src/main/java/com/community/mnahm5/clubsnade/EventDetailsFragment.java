@@ -1,6 +1,7 @@
 package com.community.mnahm5.clubsnade;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -83,7 +84,9 @@ public class EventDetailsFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         if (item.getItemId() == R.id.edit_event) {
-
+            Intent intent = new Intent(getContext(), CreateEventActivity.class);
+            intent.putExtra("eventId", eventId);
+            startActivity(intent);
         }
         else if (item.getItemId() == R.id.add_users_to_event) {
 

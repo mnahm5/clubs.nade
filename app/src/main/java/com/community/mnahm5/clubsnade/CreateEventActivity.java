@@ -39,6 +39,7 @@ public class CreateEventActivity extends AppCompatActivity implements
         DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
 
     private ParseObject club;
+    private ParseObject event;
     private Bitmap eventLogoBitmap = null;
     private Spinner spEventAccess;
 
@@ -47,12 +48,15 @@ public class CreateEventActivity extends AppCompatActivity implements
     private boolean startTimePicking = false;
     private boolean endTimePicking = false;
 
+    private EditText etEventName;
+    private EditText etEventDetails;
+    private EditText etLocation;
+    private EditText etFees;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_event);
-
-        setup();
 
         spEventAccess = (Spinner) findViewById(R.id.spEventAccess);
         // Create an ArrayAdapter using the string array and a default spinner layout
@@ -62,6 +66,8 @@ public class CreateEventActivity extends AppCompatActivity implements
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         spEventAccess.setAdapter(adapter);
+
+        setup();
     }
 
     @Override
@@ -161,7 +167,7 @@ public class CreateEventActivity extends AppCompatActivity implements
             startDate.set(Calendar.MINUTE, i1);
 
             final Button btStartPickDate = (Button) findViewById(R.id.btStartPickDate);
-            String btText = String.format(Locale.ENGLISH, "%02d-%02d-%02d %02d:%02d",
+            String btText = String.format(Locale.ENGLISH, "Start - %02d-%02d-%02d %02d:%02d",
                     startDate.get(Calendar.DAY_OF_MONTH),
                     startDate.get(Calendar.MONTH) + 1,
                     startDate.get(Calendar.YEAR),
@@ -176,7 +182,7 @@ public class CreateEventActivity extends AppCompatActivity implements
             endDate.set(Calendar.MINUTE, i1);
 
             final Button btEndPickDate = (Button) findViewById(R.id.btEndPickDate);
-            String btText = String.format(Locale.ENGLISH, "%02d-%02d-%02d %02d:%02d",
+            String btText = String.format(Locale.ENGLISH, "End - %02d-%02d-%02d %02d:%02d",
                     endDate.get(Calendar.DAY_OF_MONTH),
                     endDate.get(Calendar.MONTH) + 1,
                     endDate.get(Calendar.YEAR),
@@ -189,24 +195,55 @@ public class CreateEventActivity extends AppCompatActivity implements
     }
 
     private void setup() {
-        final String clubId = getIntent().getStringExtra("clubId");
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Club");
-        query.whereEqualTo("objectId", clubId);
-        query.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (objects.size() > 0 && e == null) {
-                    club = objects.get(0);
-                    setTitle(club.getString("name") + " - Create Event");
+        etEventName = (EditText) findViewById(R.id.etEventName);
+        etEventDetails = (EditText) findViewById(R.id.etEventDetails);
+        etLocation = (EditText) findViewById(R.id.etEventLocation);
+        etFees = (EditText) findViewById(R.id.etEventFees);
+        final String eventId = getIntent().getStringExtra("eventId");
+        if (eventId == null) {
+            final String clubId = getIntent().getStringExtra("clubId");
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("Club");
+            query.whereEqualTo("objectId", clubId);
+            query.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> objects, ParseException e) {
+                    if (objects.size() > 0 && e == null) {
+                        club = objects.get(0);
+                        setTitle(club.getString("name") + " - Create Event");
+                    }
+                    else if (e != null) {
+                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                    else {
+                        Toast.makeText(getApplicationContext(), "Error\nNo Club Found", Toast.LENGTH_LONG).show();
+                    }
                 }
-                else if (e != null) {
-                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+            });
+        }
+        else {
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("Event");
+            query.whereEqualTo("objectId", eventId);
+            query.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> objects, ParseException e) {
+                    if (objects.size() > 0 && e == null) {
+                        event = objects.get(0);
+                        setTitle(event.get("name").toString() + " - Edit Details");
+                        etEventName.setText(event.get("name").toString());
+                        etEventDetails.setText(event.get("details").toString());
+                        etLocation.setText(event.get("location").toString());
+                        etFees.setText(event.get("fees").toString());
+                        
+                    }
+                    else if (e != null) {
+                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                    else {
+                        Toast.makeText(getApplicationContext(), "No Event Found", Toast.LENGTH_LONG).show();
+                    }
                 }
-                else {
-                    Toast.makeText(getApplicationContext(), "Error\nNo Club Found", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
+            });
+        }
     }
 
     public void ChooseEventLogo(View view) {
@@ -220,10 +257,6 @@ public class CreateEventActivity extends AppCompatActivity implements
 
     public void CreateEvent(View view) {
         if (!spEventAccess.getSelectedItem().equals("None Selected") && startDate != null && endDate != null) {
-            final EditText etEventName = (EditText) findViewById(R.id.etEventName);
-            final EditText etEventDetails = (EditText) findViewById(R.id.etEventDetails);
-            final EditText etLocation = (EditText) findViewById(R.id.etEventLocation);
-            final EditText etFees = (EditText) findViewById(R.id.etEventFees);
 
             ParseObject event = new ParseObject("Event");
             event.put("name", etEventName.getText().toString());
