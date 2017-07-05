@@ -1,11 +1,14 @@
 package com.community.mnahm5.clubsnade;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextPaint;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
@@ -29,6 +32,8 @@ public class AddOrRemoveUserActivity extends AppCompatActivity {
     private String userType = null;
 
     private List<ParseUser> userList = null;
+
+    private Dialog adUsersDialog = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +68,36 @@ public class AddOrRemoveUserActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    public void AddUsers(View view) {
+        adUsersDialog = new Dialog(AddOrRemoveUserActivity.this);
+        adUsersDialog.setContentView(R.layout.dialog_add_users);
+
+        final ListView lvSearchResults = (ListView) adUsersDialog.findViewById(R.id.lvSearchResults);
+        final List<Map<String, String>> userListData = new ArrayList<Map<String, String>>();
+
+        for (int i = 0; i < 5; i++) {
+            Map<String, String> userData = new HashMap<String, String>();
+            userData.put("username", "Username");
+            userData.put("fullName", "Full Name");
+            userListData.add(userData);
+        }
+
+        final SimpleAdapter simpleAdapter = new SimpleAdapter(
+                AddOrRemoveUserActivity.this,
+                userListData,
+                android.R.layout.simple_list_item_2,
+                new String[] {"username", "fullName"},
+                new int[] {android.R.id.text1, android.R.id.text2}
+        );
+        lvSearchResults.setAdapter(simpleAdapter);
+
+        adUsersDialog.show();
+    }
+
+    public void SaveChanges(View view) {
+
     }
 
     private void ShowCurrentUserList() {
