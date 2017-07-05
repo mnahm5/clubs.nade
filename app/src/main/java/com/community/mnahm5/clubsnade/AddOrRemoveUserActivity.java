@@ -1,6 +1,7 @@
 package com.community.mnahm5.clubsnade;
 
 import android.content.Intent;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextPaint;
@@ -14,6 +15,7 @@ import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,7 +28,7 @@ public class AddOrRemoveUserActivity extends AppCompatActivity {
     private ParseObject event = null;
     private String userType = null;
 
-    private List<ParseObject> userList = null;
+    private List<ParseUser> userList = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,23 +66,48 @@ public class AddOrRemoveUserActivity extends AppCompatActivity {
     }
 
     private void ShowCurrentUserList() {
-        final ListView lvUserList = (ListView) findViewById(R.id.lvUserList);
-        final List<Map<String, String>> userListData = new ArrayList<Map<String, String>>();
+        if (club != null) {
+            List<String> userIds = club.getList("admins");
+            ParseQuery<ParseUser> query = ParseUser.getQuery();
+            query.whereContainedIn("objectId", userIds);
+            query.findInBackground(new FindCallback<ParseUser>() {
+                @Override
+                public void done(List<ParseUser> objects, ParseException e) {
+                    if (objects.size() > 0 && e == null) {
+                        userList = objects;
+                        final ListView lvUserList = (ListView) findViewById(R.id.lvUserList);
+                        final List<Map<String, String>> userListData = new ArrayList<Map<String, String>>();
 
-        for (int i = 0; i < 20; i++) {
-            Map<String, String> userData = new HashMap<String, String>();
-            userData.put("username", "Name");
-            userData.put("fullName", "Full Name");
-            userListData.add(userData);
+                        for (ParseUser user: userList) {
+                            Map<String, String> userData = new HashMap<String, String>();
+                            userData.put("username", user.getUsername());
+                            userData.put("fullName", user.get("fullName").toString());
+                            userListData.add(userData);
+                        }
+
+                        final SimpleAdapter simpleAdapter = new SimpleAdapter(
+                                AddOrRemoveUserActivity.this,
+                                userListData,
+                                android.R.layout.simple_list_item_2,
+                                new String[] {"username", "fullName"},
+                                new int[] {android.R.id.text1, android.R.id.text2}
+                        );
+                        lvUserList.setAdapter(simpleAdapter);
+
+                        if (userListData.size() > 6) {
+                            ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) lvUserList.getLayoutParams();
+                            lp.height = 1000;
+                            lvUserList.setLayoutParams(lp);
+                        }
+                    }
+                    else if (e != null) {
+                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                    else {
+                        Toast.makeText(getApplicationContext(), "No User Found", Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
         }
-
-        final SimpleAdapter simpleAdapter = new SimpleAdapter(
-                AddOrRemoveUserActivity.this,
-                userListData,
-                android.R.layout.simple_list_item_2,
-                new String[] {"username", "fullName"},
-                new int[] {android.R.id.text1, android.R.id.text2}
-        );
-        lvUserList.setAdapter(simpleAdapter);
     }
 }
