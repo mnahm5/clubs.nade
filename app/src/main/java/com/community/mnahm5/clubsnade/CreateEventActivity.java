@@ -5,6 +5,8 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -21,6 +23,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
+import com.parse.GetDataCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -30,6 +33,8 @@ import com.parse.SaveCallback;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import android.text.format.DateFormat;
+
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -167,14 +172,7 @@ public class CreateEventActivity extends AppCompatActivity implements
             startDate.set(Calendar.MINUTE, i1);
 
             final Button btStartPickDate = (Button) findViewById(R.id.btStartPickDate);
-            String btText = String.format(Locale.ENGLISH, "Start - %02d-%02d-%02d %02d:%02d",
-                    startDate.get(Calendar.DAY_OF_MONTH),
-                    startDate.get(Calendar.MONTH) + 1,
-                    startDate.get(Calendar.YEAR),
-                    startDate.get(Calendar.HOUR_OF_DAY),
-                    startDate.get(Calendar.MINUTE)
-            );
-            btStartPickDate.setText(btText);
+            ShowDateOnButton(startDate, btStartPickDate, "Start");
             startTimePicking = false;
         }
         else if (endTimePicking) {
@@ -182,14 +180,7 @@ public class CreateEventActivity extends AppCompatActivity implements
             endDate.set(Calendar.MINUTE, i1);
 
             final Button btEndPickDate = (Button) findViewById(R.id.btEndPickDate);
-            String btText = String.format(Locale.ENGLISH, "End - %02d-%02d-%02d %02d:%02d",
-                    endDate.get(Calendar.DAY_OF_MONTH),
-                    endDate.get(Calendar.MONTH) + 1,
-                    endDate.get(Calendar.YEAR),
-                    endDate.get(Calendar.HOUR_OF_DAY),
-                    endDate.get(Calendar.MINUTE)
-            );
-            btEndPickDate.setText(btText);
+            ShowDateOnButton(endDate, btEndPickDate, "End");
             endTimePicking = false;
         }
     }
@@ -233,7 +224,37 @@ public class CreateEventActivity extends AppCompatActivity implements
                         etEventDetails.setText(event.get("details").toString());
                         etLocation.setText(event.get("location").toString());
                         etFees.setText(event.get("fees").toString());
-                        
+
+                        startDate = Calendar.getInstance();
+                        startDate.setTime(event.getDate("startDate"));
+                        final Button btStartPickDate = (Button) findViewById(R.id.btStartPickDate);
+                        ShowDateOnButton(startDate, btStartPickDate, "Start");
+
+                        endDate = Calendar.getInstance();
+                        endDate.setTime(event.getDate("endDate"));
+                        final Button btEndPickDate = (Button) findViewById(R.id.btEndPickDate);
+                        ShowDateOnButton(endDate, btEndPickDate, "End");
+
+                        final ImageView ivEventLogo = (ImageView) findViewById(R.id.ivEventLogo);
+                        ParseFile file = (ParseFile) event.get("logo");
+                        if (file != null) {
+                            file.getDataInBackground(new GetDataCallback() {
+                                @Override
+                                public void done(byte[] data, ParseException e) {
+                                    if (e == null && data != null) {
+                                        eventLogoBitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+                                        ivEventLogo.setImageBitmap(eventLogoBitmap);
+                                        ivEventLogo.setVisibility(View.VISIBLE);
+                                    }
+                                }
+                            });
+                        }
+
+                        List<String> accessOptions = Arrays.asList((getResources().getStringArray(R.array.access_array)));
+                        spEventAccess.setSelection(accessOptions.indexOf(event.get("access").toString()));
+
+                        Button btCreateEvent = (Button) findViewById(R.id.btCreateEvent);
+                        btCreateEvent.setText(R.string.edit_event);
                     }
                     else if (e != null) {
                         Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
@@ -258,13 +279,17 @@ public class CreateEventActivity extends AppCompatActivity implements
     public void CreateEvent(View view) {
         if (!spEventAccess.getSelectedItem().equals("None Selected") && startDate != null && endDate != null) {
 
-            ParseObject event = new ParseObject("Event");
+            if (event == null) {
+                event = new ParseObject("Event");
+                event.put("clubId", club.getObjectId());
+            }
+
             event.put("name", etEventName.getText().toString());
             event.put("details", etEventDetails.getText().toString());
             event.put("location", etLocation.getText().toString());
             event.put("fees", etFees.getText().toString());
             event.put("access", spEventAccess.getSelectedItem());
-            event.put("clubId", club.getObjectId());
+
 
             if (eventLogoBitmap != null) {
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -290,6 +315,7 @@ public class CreateEventActivity extends AppCompatActivity implements
                     }
                 }
             });
+
         }
         else if (startDate == null || endDate == null) {
             Toast.makeText(getApplicationContext(), "Start and End times need to picked", Toast.LENGTH_LONG).show();
@@ -357,5 +383,17 @@ public class CreateEventActivity extends AppCompatActivity implements
                 month,
                 day);
         datePickerDialog.show();
+    }
+
+    private void ShowDateOnButton(Calendar date, Button button, String type) {
+        String btText = String.format(Locale.ENGLISH, "%s - %02d-%02d-%02d %02d:%02d",
+                type,
+                date.get(Calendar.DAY_OF_MONTH),
+                date.get(Calendar.MONTH) + 1,
+                date.get(Calendar.YEAR),
+                date.get(Calendar.HOUR_OF_DAY),
+                date.get(Calendar.MINUTE)
+        );
+        button.setText(btText);
     }
 }
