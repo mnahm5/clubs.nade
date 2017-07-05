@@ -119,8 +119,9 @@ public class ClubDetailsFragment extends Fragment {
             startActivity(intent);
         }
         else if (item.getItemId() == R.id.change_admins) {
-            Intent intent = new Intent(getContext(), ChangeAdminsActivity.class);
+            Intent intent = new Intent(getContext(), AddOrRemoveUserActivity.class);
             intent.putExtra("clubId", clubId);
+            intent.putExtra("userType", "admin");
             startActivity(intent);
         }
 
