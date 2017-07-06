@@ -3,6 +3,7 @@ package com.community.mnahm5.clubsnade;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.provider.UserDictionary;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -40,6 +41,7 @@ public class AddOrRemoveUserActivity extends AppCompatActivity {
     private String userType = null;
 
     private List<ParseUser> userList = null;
+    private List<ParseUser> dialogUserList = null;
 
     private ListView lvSearchResults = null;
 
@@ -84,21 +86,12 @@ public class AddOrRemoveUserActivity extends AppCompatActivity {
         lvSearchResults = (ListView) v.findViewById(R.id.lvSearchResults);
 
         final EditText etSearch= (EditText) v.findViewById(R.id.etSearch);
+        final Button btGo = (Button) v.findViewById(R.id.btGo);
 
-        etSearch.addTextChangedListener(new TextWatcher() {
+        btGo.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                FindUsers(charSequence.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
+            public void onClick(View view) {
+                FindUsers(etSearch.getText().toString());
             }
         });
 
@@ -170,21 +163,46 @@ public class AddOrRemoveUserActivity extends AppCompatActivity {
 
     private void FindUsers(String searchData) {
         if (club != null) {
-            ParseQuery<ParseUser> query = ParseUser.getQuery();
-            query.whereNotContainedIn("objectId", club.getList(userType));
-
+            ParseQuery<ParseUser> query;
             if (searchData != null) {
+                List<ParseQuery<ParseUser>> queries = new ArrayList<ParseQuery<ParseUser>>();
 
+                ParseQuery<ParseUser> query1 = ParseUser.getQuery();
+                query1.whereContains("username", searchData);
+                queries.add(query1);
+
+                ParseQuery<ParseUser> query2 = ParseUser.getQuery();
+                query2.whereContains("fullName", searchData);
+                queries.add(query2);
+
+                ParseQuery<ParseUser> query3 = ParseUser.getQuery();
+                query3.whereContains("fullName", searchData.toLowerCase());
+                queries.add(query3);
+
+                ParseQuery<ParseUser> query4 = ParseUser.getQuery();
+                query4.whereContains("fullName", searchData.toUpperCase());
+                queries.add(query4);
+
+                ParseQuery<ParseUser> query5 = ParseUser.getQuery();
+                query5.whereContains("fullName", CapitalizeWords(searchData));
+                queries.add(query5);
+
+                query = ParseQuery.or(queries);
             }
+            else {
+                query = ParseUser.getQuery();
+            }
+            query.whereNotContainedIn("objectId", club.getList(userType));
+            query.setLimit(15);
 
             query.findInBackground(new FindCallback<ParseUser>() {
                 @Override
                 public void done(List<ParseUser> objects, ParseException e) {
                     if (objects.size() > 0 && e == null) {
-                        userList = objects;
+                        dialogUserList = objects;
                         final List<Map<String, String>> userListData = new ArrayList<Map<String, String>>();
 
-                        for (ParseUser user: userList) {
+                        for (ParseUser user: dialogUserList) {
                             Map<String, String> userData = new HashMap<String, String>();
                             userData.put("username", user.getUsername());
                             userData.put("fullName", user.get("fullName").toString());
@@ -221,5 +239,18 @@ public class AddOrRemoveUserActivity extends AppCompatActivity {
 
     private void FindUsers() {
         FindUsers(null);
+    }
+
+    private String CapitalizeWords(String word) {
+        String[] strArray = word.split(" ");
+        String result = "";
+        for (int i = 0; i < strArray.length; i++) {
+            String cap = strArray[i].substring(0, 1).toUpperCase() + strArray[i].substring(1);
+            result += cap;
+            if (i != (strArray.length - 1)) {
+                result += " ";
+            }
+        }
+        return result;
     }
 }
