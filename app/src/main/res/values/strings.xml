@@ -75,6 +75,7 @@
     <string name="add_users_to_event">Add Users to Event</string>
     <string name="add_users_button">Add Users Button</string>
     <string name="search_for_users">Search for Users</string>
+    <string name="search_by_username_name">Search by Username/Name</string>
 
     <string-array name="access_array">
         <item>None Selected</item>

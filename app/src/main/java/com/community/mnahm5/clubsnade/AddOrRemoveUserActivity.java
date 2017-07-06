@@ -1,11 +1,14 @@
 package com.community.mnahm5.clubsnade;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.support.constraint.ConstraintLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextPaint;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -32,8 +35,6 @@ public class AddOrRemoveUserActivity extends AppCompatActivity {
     private String userType = null;
 
     private List<ParseUser> userList = null;
-
-    private Dialog adUsersDialog = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,19 +72,20 @@ public class AddOrRemoveUserActivity extends AppCompatActivity {
     }
 
     public void AddUsers(View view) {
-        adUsersDialog = new Dialog(AddOrRemoveUserActivity.this);
-        adUsersDialog.setContentView(R.layout.dialog_add_users);
+        AlertDialog.Builder builder = new AlertDialog.Builder(AddOrRemoveUserActivity.this);
+        View v = getLayoutInflater().inflate(R.layout.dialog_add_users, null);
+        final EditText etSearch = (EditText) v.findViewById(R.id.etSearch);
 
-        final ListView lvSearchResults = (ListView) adUsersDialog.findViewById(R.id.lvSearchResults);
         final List<Map<String, String>> userListData = new ArrayList<Map<String, String>>();
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 20; i++) {
             Map<String, String> userData = new HashMap<String, String>();
             userData.put("username", "Username");
             userData.put("fullName", "Full Name");
             userListData.add(userData);
         }
 
+        final ListView lvSearchResults = (ListView) v.findViewById(R.id.lvSearchResults);
         final SimpleAdapter simpleAdapter = new SimpleAdapter(
                 AddOrRemoveUserActivity.this,
                 userListData,
@@ -93,7 +95,9 @@ public class AddOrRemoveUserActivity extends AppCompatActivity {
         );
         lvSearchResults.setAdapter(simpleAdapter);
 
-        adUsersDialog.show();
+        builder.setView(v);
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     public void SaveChanges(View view) {
