@@ -7,10 +7,13 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextPaint;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -28,6 +31,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.security.AccessController.getContext;
+
 public class AddOrRemoveUserActivity extends AppCompatActivity {
 
     private ParseObject club = null;
@@ -35,6 +40,8 @@ public class AddOrRemoveUserActivity extends AppCompatActivity {
     private String userType = null;
 
     private List<ParseUser> userList = null;
+
+    private ListView lvSearchResults = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,30 +80,41 @@ public class AddOrRemoveUserActivity extends AppCompatActivity {
 
     public void AddUsers(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(AddOrRemoveUserActivity.this);
-        View v = getLayoutInflater().inflate(R.layout.dialog_add_users, null);
-        final EditText etSearch = (EditText) v.findViewById(R.id.etSearch);
+        final View v = getLayoutInflater().inflate(R.layout.dialog_add_users, null);
+        lvSearchResults = (ListView) v.findViewById(R.id.lvSearchResults);
 
-        final List<Map<String, String>> userListData = new ArrayList<Map<String, String>>();
+        final EditText etSearch= (EditText) v.findViewById(R.id.etSearch);
 
-        for (int i = 0; i < 20; i++) {
-            Map<String, String> userData = new HashMap<String, String>();
-            userData.put("username", "Username");
-            userData.put("fullName", "Full Name");
-            userListData.add(userData);
-        }
+        etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-        final ListView lvSearchResults = (ListView) v.findViewById(R.id.lvSearchResults);
-        final SimpleAdapter simpleAdapter = new SimpleAdapter(
-                AddOrRemoveUserActivity.this,
-                userListData,
-                android.R.layout.simple_list_item_2,
-                new String[] {"username", "fullName"},
-                new int[] {android.R.id.text1, android.R.id.text2}
-        );
-        lvSearchResults.setAdapter(simpleAdapter);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                FindUsers(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        FindUsers();
 
         builder.setView(v);
-        AlertDialog dialog = builder.create();
+        final AlertDialog dialog = builder.create();
+
+        Button btCancel = (Button) v.findViewById(R.id.btCancel);
+        btCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
         dialog.show();
     }
 
@@ -148,5 +166,60 @@ public class AddOrRemoveUserActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    private void FindUsers(String searchData) {
+        if (club != null) {
+            ParseQuery<ParseUser> query = ParseUser.getQuery();
+            query.whereNotContainedIn("objectId", club.getList(userType));
+
+            if (searchData != null) {
+
+            }
+
+            query.findInBackground(new FindCallback<ParseUser>() {
+                @Override
+                public void done(List<ParseUser> objects, ParseException e) {
+                    if (objects.size() > 0 && e == null) {
+                        userList = objects;
+                        final List<Map<String, String>> userListData = new ArrayList<Map<String, String>>();
+
+                        for (ParseUser user: userList) {
+                            Map<String, String> userData = new HashMap<String, String>();
+                            userData.put("username", user.getUsername());
+                            userData.put("fullName", user.get("fullName").toString());
+                            userListData.add(userData);
+                        }
+
+                        final SimpleAdapter simpleAdapter = new SimpleAdapter(
+                                AddOrRemoveUserActivity.this,
+                                userListData,
+                                android.R.layout.simple_list_item_2,
+                                new String[] {"username", "fullName"},
+                                new int[] {android.R.id.text1, android.R.id.text2}
+                        );
+                        lvSearchResults.setAdapter(simpleAdapter);
+
+                        if (userListData.size() > 5) {
+                            ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) lvSearchResults.getLayoutParams();
+                            float dps = 350;
+                            final float scale = getApplicationContext().getResources().getDisplayMetrics().density;
+                            lp.height = (int) (dps * scale + 0.5f);
+                            lvSearchResults.setLayoutParams(lp);
+                        }
+                    }
+                    else if (e != null) {
+                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                    else {
+                        Toast.makeText(getApplicationContext(), "No users found", Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+        }
+    }
+
+    private void FindUsers() {
+        FindUsers(null);
     }
 }
