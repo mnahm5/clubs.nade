@@ -9,10 +9,20 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="@string/search_by_username_name"
-        android:inputType="textPersonName" />
+        android:inputType="textPersonName"
+        android:padding="10dp"
+        />
 
     <ListView
         android:id="@+id/lvSearchResults"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="350dp" />
+
+    <Button
+        android:id="@+id/btCancel"
+        android:layout_width="match_parent"
+
+        android:layout_height="wrap_content"
+        android:text="Cancel" />
+
 </LinearLayout>
