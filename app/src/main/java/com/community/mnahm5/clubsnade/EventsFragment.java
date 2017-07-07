@@ -74,35 +74,48 @@ public class EventsFragment extends Fragment {
     }
 
     private void getClubs() {
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Club");
+        ParseQuery<ParseObject> query = null;
 
         if (state != null && state.equals("Home")) {
             List<String> userIds = new ArrayList<String>();
             userIds.add(ParseUser.getCurrentUser().getObjectId());
-            query.whereContainedIn("admins", userIds);
+            List<ParseQuery<ParseObject>> queries = new ArrayList<ParseQuery<ParseObject>>();
+
+            ParseQuery<ParseObject> query1 = ParseQuery.getQuery("Club");
+            query1.whereContainedIn("admins", userIds);
+            queries.add(query1);
+
+            ParseQuery<ParseObject> query2 = ParseQuery.getQuery("Club");
+            query2.whereContainedIn("clubMembers", userIds);
+            queries.add(query2);
+
+            query = ParseQuery.or(queries);
         }
         else if (state != null && state.equals("Club")) {
+            query = ParseQuery.getQuery("Club");
             query.whereEqualTo("objectId", clubId);
         }
 
-        query.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (objects.size() > 0 && e == null) {
-                    clubs = new HashMap<String, ParseObject>();
-                    for (ParseObject club: objects) {
-                        clubs.put(club.getObjectId(), club);
+        if (query != null) {
+            query.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> objects, ParseException e) {
+                    if (objects.size() > 0 && e == null) {
+                        clubs = new HashMap<String, ParseObject>();
+                        for (ParseObject club: objects) {
+                            clubs.put(club.getObjectId(), club);
+                        }
+                        getEvents();
                     }
-                    getEvents();
+                    else if (e != null) {
+                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                    else {
+                        Toast.makeText(getContext(), "No Club Found", Toast.LENGTH_LONG).show();
+                    }
                 }
-                else if (e != null) {
-                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-                }
-                else {
-                    Toast.makeText(getContext(), "No Club Found", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
+            });
+        }
     }
 
     private void getEvents() {
@@ -141,10 +154,13 @@ public class EventsFragment extends Fragment {
             final List<Map<String, String>> eventsData = new ArrayList<Map<String, String>>();
 
             for (ParseObject event: events) {
-                Map<String, String> eventData = new HashMap<String, String>();
-                eventData.put("name", event.get("name").toString());
-                eventData.put("clubName", clubs.get(event.get("clubId").toString()).get("name").toString());
-                eventsData.add(eventData);
+                if (!(event.get("access").toString().equals("Admins Only") &&
+                    !clubs.get(event.get("clubId").toString()).getList("admins").contains(ParseUser.getCurrentUser().getObjectId()))) {
+                    Map<String, String> eventData = new HashMap<String, String>();
+                    eventData.put("name", event.get("name").toString());
+                    eventData.put("clubName", clubs.get(event.get("clubId").toString()).get("name").toString());
+                    eventsData.add(eventData);
+                }
             }
 
             final SimpleAdapter simpleAdapter = new SimpleAdapter(
