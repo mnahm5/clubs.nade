@@ -79,40 +79,61 @@ public class ClubsFragment extends Fragment {
                 new int[] {android.R.id.text1, android.R.id.text2}
                 );
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Club");
-        query.whereExists("name");
-        query.addAscendingOrder("name");
+        ParseQuery<ParseObject> query = null;
         if (state.equals("Admin") || state.equals("Member")) {
             ArrayList<String> userIds = new ArrayList<String>();
             userIds.add(ParseUser.getCurrentUser().getObjectId());
-            query.whereContainedIn("admins", userIds);
-        }
-        query.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (objects.size() > 0 && e == null) {
-                    for (ParseObject club: objects) {
-                        Map<String, String> clubData = new HashMap<String, String>();
-                        clubData.put("clubName", club.get("name").toString());
-                        if (club.get("details").toString().length() > 30) {
-                            clubData.put("clubDetails", club.get("details").toString().substring(0, 30).concat("..."));
-                        }
-                        else {
-                            clubData.put("clubDetails", club.get("details").toString());
-                        }
-                        clubData.put("id", club.getObjectId());
-                        clubsData.add(clubData);
-                    }
-                    lvClubs.setAdapter(simpleAdapter);
-                }
-                else if (e != null) {
-                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-                }
-                else {
-                    Toast.makeText(getContext(), "No data found", Toast.LENGTH_LONG).show();
-                }
+            if (state.equals("Member")) {
+                List<ParseQuery<ParseObject>> queries = new ArrayList<ParseQuery<ParseObject>>();
+
+                ParseQuery<ParseObject> query1 = new ParseQuery<ParseObject>("Club");
+                query1.whereContainedIn("clubMembers", userIds);
+                queries.add(query1);
+
+                ParseQuery<ParseObject> query2 = new ParseQuery<ParseObject>("Club");
+                query2.whereContainedIn("admins", userIds);
+                queries.add(query2);
+
+                query = ParseQuery.or(queries);
             }
-        });
+            else if (state.equals("Admin")) {
+                query = ParseQuery.getQuery("Club");
+                query.whereContainedIn("admins", userIds);
+            }
+        }
+        else {
+            query = ParseQuery.getQuery("Club");
+        }
+        if (query != null) {
+            query.whereExists("name");
+            query.addAscendingOrder("name");
+            query.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> objects, ParseException e) {
+                    if (objects.size() > 0 && e == null) {
+                        for (ParseObject club: objects) {
+                            Map<String, String> clubData = new HashMap<String, String>();
+                            clubData.put("clubName", club.get("name").toString());
+                            if (club.get("details").toString().length() > 30) {
+                                clubData.put("clubDetails", club.get("details").toString().substring(0, 30).concat("..."));
+                            }
+                            else {
+                                clubData.put("clubDetails", club.get("details").toString());
+                            }
+                            clubData.put("id", club.getObjectId());
+                            clubsData.add(clubData);
+                        }
+                        lvClubs.setAdapter(simpleAdapter);
+                    }
+                    else if (e != null) {
+                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                    else {
+                        Toast.makeText(getContext(), "No data found", Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+        }
 
         final Button btCreateClubs = (Button) view.findViewById(R.id.btCreateClub);
         btCreateClubs.setOnClickListener(new View.OnClickListener() {
