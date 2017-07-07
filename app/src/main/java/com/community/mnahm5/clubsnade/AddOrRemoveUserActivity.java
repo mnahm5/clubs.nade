@@ -41,7 +41,6 @@ import static java.security.AccessController.getContext;
 public class AddOrRemoveUserActivity extends AppCompatActivity {
 
     private ParseObject club = null;
-    private ParseObject event = null;
     private String userType = null;
 
     private List<String> userList = null;
