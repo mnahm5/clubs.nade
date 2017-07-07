@@ -72,7 +72,7 @@ public class AddOrRemoveUserActivity extends AppCompatActivity {
                         setTitle(String.format(
                                 "%s - %s",
                                 club.get("name"),
-                                userType.substring(0, 1).toUpperCase() + userType.substring(1)
+                                NormalizeString(userType)
                         ));
                         ShowCurrentUserList();
                     }
@@ -135,7 +135,7 @@ public class AddOrRemoveUserActivity extends AppCompatActivity {
                 @Override
                 public void done(ParseException e) {
                     if (e == null) {
-                        Toast.makeText(getApplicationContext(), "Admins Changed", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), NormalizeString(userType) + " Changed", Toast.LENGTH_SHORT).show();
                     }
                     else {
                         Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -148,55 +148,59 @@ public class AddOrRemoveUserActivity extends AppCompatActivity {
     private void ShowCurrentUserList() {
         if (club != null) {
             List<String> userIds = club.getList(userType);
-            ParseQuery<ParseUser> query = ParseUser.getQuery();
-            query.whereContainedIn("objectId", userIds);
-            query.findInBackground(new FindCallback<ParseUser>() {
+            lvUserList = (ListView) findViewById(R.id.lvUserList);
+            lvUserList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
-                public void done(List<ParseUser> objects, ParseException e) {
-                    if (objects.size() > 0 && e == null) {
-                        lvUserList = (ListView) findViewById(R.id.lvUserList);
-                        userListData = new ArrayList<Map<String, String>>();
-                        userList = new ArrayList<String>();
-
-                        for (ParseUser user: objects) {
-                            Map<String, String> userData = new HashMap<String, String>();
-                            userData.put("username", user.getUsername());
-                            userData.put("fullName", user.get("fullName").toString());
-                            userListData.add(userData);
-                            userList.add(user.getObjectId());
-                        }
-
-                        lvUserListAdapter = new SimpleAdapter(
-                                AddOrRemoveUserActivity.this,
-                                userListData,
-                                android.R.layout.simple_list_item_2,
-                                new String[] {"username", "fullName"},
-                                new int[] {android.R.id.text1, android.R.id.text2}
-                        );
-                        lvUserList.setAdapter(lvUserListAdapter);
-
-                        if (userListData.size() > 6) {
-                            ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) lvUserList.getLayoutParams();
-                            lp.height = 1000;
-                            lvUserList.setLayoutParams(lp);
-                        }
-
-                        lvUserList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-                            @Override
-                            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                                RemoveUserFromMainList(i);
-                                return false;
-                            }
-                        });
-                    }
-                    else if (e != null) {
-                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-                    }
-                    else {
-                        Toast.makeText(getApplicationContext(), "No User Found", Toast.LENGTH_LONG).show();
-                    }
+                public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    RemoveUserFromMainList(i);
+                    return false;
                 }
             });
+            userListData = new ArrayList<Map<String, String>>();
+            userList = new ArrayList<String>();
+
+            if (userIds != null) {
+                ParseQuery<ParseUser> query = ParseUser.getQuery();
+                query.whereContainedIn("objectId", userIds);
+                query.findInBackground(new FindCallback<ParseUser>() {
+                    @Override
+                    public void done(List<ParseUser> objects, ParseException e) {
+                        if (objects.size() > 0 && e == null) {
+                            for (ParseUser user: objects) {
+                                Map<String, String> userData = new HashMap<String, String>();
+                                userData.put("username", user.getUsername());
+                                userData.put("fullName", user.get("fullName").toString());
+                                userListData.add(userData);
+                                userList.add(user.getObjectId());
+                            }
+
+                            lvUserListAdapter = new SimpleAdapter(
+                                    AddOrRemoveUserActivity.this,
+                                    userListData,
+                                    android.R.layout.simple_list_item_2,
+                                    new String[] {"username", "fullName"},
+                                    new int[] {android.R.id.text1, android.R.id.text2}
+                            );
+                            lvUserList.setAdapter(lvUserListAdapter);
+
+                            if (userListData.size() > 6) {
+                                ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) lvUserList.getLayoutParams();
+                                lp.height = 1000;
+                                lvUserList.setLayoutParams(lp);
+                            }
+                        }
+                        else if (e != null) {
+                            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                        else {
+                            Toast.makeText(getApplicationContext(), "No " + NormalizeString(userType) + " Found", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+            }
+            else {
+                Toast.makeText(getApplicationContext(), "No " + NormalizeString(userType) + " Found", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -299,7 +303,21 @@ public class AddOrRemoveUserActivity extends AppCompatActivity {
         userData.put("username", user.getUsername());
         userData.put("fullName", user.get("fullName").toString());
         userListData.add(userData);
-        lvUserListAdapter.notifyDataSetChanged();
+
+        if (lvUserListAdapter != null) {
+            lvUserListAdapter.notifyDataSetChanged();
+        }
+        else {
+            lvUserListAdapter = new SimpleAdapter(
+                    AddOrRemoveUserActivity.this,
+                    userListData,
+                    android.R.layout.simple_list_item_2,
+                    new String[] {"username", "fullName"},
+                    new int[] {android.R.id.text1, android.R.id.text2}
+            );
+            lvUserList.setAdapter(lvUserListAdapter);
+        }
+
         if (userListData.size() > 6) {
             ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) lvUserList.getLayoutParams();
             lp.height = 1000;
@@ -333,5 +351,16 @@ public class AddOrRemoveUserActivity extends AppCompatActivity {
             AlertDialog dialog = builder.create();
             dialog.show();
         }
+    }
+
+    private String NormalizeString(String string) {
+        String normalizedString = string.substring(0,1).toUpperCase();
+        for (int i = 1; i < string.length(); i++) {
+            if (Character.isUpperCase(string.charAt(i))) {
+                normalizedString += " ";
+            }
+            normalizedString += string.charAt(i);
+        }
+        return normalizedString;
     }
 }
