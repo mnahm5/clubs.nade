@@ -2,6 +2,7 @@ package com.community.mnahm5.clubsnade;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.provider.UserDictionary;
 import android.support.constraint.ConstraintLayout;
@@ -43,12 +44,10 @@ public class AddOrRemoveUserActivity extends AppCompatActivity {
     private ParseObject event = null;
     private String userType = null;
 
-    private List<ParseUser> newUsers = null;
-    private List<ParseUser> removedUsers = null;
-
     private List<String> userList = null;
     private SimpleAdapter lvUserListAdapter = null;
     private List<Map<String, String>> userListData = null;
+    private ListView lvUserList = null;
 
     private List<ParseUser> dialogUserList = null;
     private ListView lvSearchResults = null;
@@ -155,7 +154,7 @@ public class AddOrRemoveUserActivity extends AppCompatActivity {
                 @Override
                 public void done(List<ParseUser> objects, ParseException e) {
                     if (objects.size() > 0 && e == null) {
-                        final ListView lvUserList = (ListView) findViewById(R.id.lvUserList);
+                        lvUserList = (ListView) findViewById(R.id.lvUserList);
                         userListData = new ArrayList<Map<String, String>>();
                         userList = new ArrayList<String>();
 
@@ -181,6 +180,14 @@ public class AddOrRemoveUserActivity extends AppCompatActivity {
                             lp.height = 1000;
                             lvUserList.setLayoutParams(lp);
                         }
+
+                        lvUserList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                            @Override
+                            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                RemoveUserFromMainList(i);
+                                return false;
+                            }
+                        });
                     }
                     else if (e != null) {
                         Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
@@ -287,15 +294,44 @@ public class AddOrRemoveUserActivity extends AppCompatActivity {
     }
 
     private void AddUserToMainList(ParseUser user) {
-        if (newUsers == null) {
-            newUsers = new ArrayList<ParseUser>();
-        }
-        newUsers.add(user);
         userList.add(user.getObjectId());
         Map<String, String> userData = new HashMap<String, String>();
         userData.put("username", user.getUsername());
         userData.put("fullName", user.get("fullName").toString());
         userListData.add(userData);
         lvUserListAdapter.notifyDataSetChanged();
+        if (userListData.size() > 6) {
+            ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) lvUserList.getLayoutParams();
+            lp.height = 1000;
+            lvUserList.setLayoutParams(lp);
+        }
+    }
+
+    private void RemoveUserFromMainList(final int userPosition) {
+        if (userListData.size() == 1 && userType.equals("admins")) {
+            Toast.makeText(getApplicationContext(), "Cannot remove all admins", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(AddOrRemoveUserActivity.this);
+            // Add the buttons
+            builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    userListData.remove(userPosition);
+                    userList.remove(userPosition);
+                    lvUserListAdapter.notifyDataSetChanged();
+                    dialog.dismiss();
+                    Toast.makeText(getApplicationContext(), "User Removed", Toast.LENGTH_SHORT).show();
+                }
+            });
+            builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.dismiss();
+                }
+            });
+            builder.setMessage("Are you sure you want to remove this user from " + userType + " list")
+                    .setTitle(R.string.warning);
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        }
     }
 }

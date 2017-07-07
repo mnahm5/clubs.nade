@@ -78,6 +78,8 @@
     <string name="search_by_username_name">Search by Username/Name</string>
     <string name="done">Done</string>
     <string name="go">Go</string>
+    <string name="ok">Ok</string>
+    <string name="warning">Warning</string>
 
     <string-array name="access_array">
         <item>None Selected</item>
