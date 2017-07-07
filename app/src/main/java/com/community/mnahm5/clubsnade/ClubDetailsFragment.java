@@ -174,5 +174,14 @@ public class ClubDetailsFragment extends Fragment {
                 setHasOptionsMenu(true);
             }
         }
+
+        List<String> clubMembers = club.getList("clubMembers");
+        if (clubMembers != null) {
+            for (String userId: clubMembers) {
+                if (userId.compareTo(ParseUser.getCurrentUser().getObjectId()) == 0) {
+                    btJoin.setVisibility(View.INVISIBLE);
+                }
+            }
+        }
     }
 }
