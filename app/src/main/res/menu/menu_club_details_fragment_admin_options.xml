@@ -12,6 +12,11 @@
         />
 
     <item
+        android:id="@+id/change_club_members"
+        android:title="@string/change_club_members"
+        />
+
+    <item
         android:id="@+id/create_event"
         android:title="@string/create_event_for_club"
         />

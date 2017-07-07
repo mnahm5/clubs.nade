@@ -124,6 +124,12 @@ public class ClubDetailsFragment extends Fragment {
             intent.putExtra("userType", "admins");
             startActivity(intent);
         }
+        else if (item.getItemId() == R.id.change_club_members) {
+            Intent intent = new Intent(getContext(), AddOrRemoveUserActivity.class);
+            intent.putExtra("clubId", clubId);
+            intent.putExtra("userType", "clubMembers");
+            startActivity(intent);
+        }
 
         return super.onOptionsItemSelected(item);
     }

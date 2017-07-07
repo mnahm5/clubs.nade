@@ -80,6 +80,7 @@
     <string name="go">Go</string>
     <string name="ok">Ok</string>
     <string name="warning">Warning</string>
+    <string name="change_club_members">Change Club Members</string>
 
     <string-array name="access_array">
         <item>None Selected</item>
