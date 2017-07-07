@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.provider.UserDictionary;
 import android.support.constraint.ConstraintLayout;
+import android.support.constraint.solver.widgets.ConstraintAnchor;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.text.TextPaint;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,6 +28,7 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,9 +43,14 @@ public class AddOrRemoveUserActivity extends AppCompatActivity {
     private ParseObject event = null;
     private String userType = null;
 
-    private List<ParseUser> userList = null;
-    private List<ParseUser> dialogUserList = null;
+    private List<ParseUser> newUsers = null;
+    private List<ParseUser> removedUsers = null;
 
+    private List<String> userList = null;
+    private SimpleAdapter lvUserListAdapter = null;
+    private List<Map<String, String>> userListData = null;
+
+    private List<ParseUser> dialogUserList = null;
     private ListView lvSearchResults = null;
 
     @Override
@@ -83,6 +91,7 @@ public class AddOrRemoveUserActivity extends AppCompatActivity {
     public void AddUsers(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(AddOrRemoveUserActivity.this);
         final View v = getLayoutInflater().inflate(R.layout.dialog_add_users, null);
+
         lvSearchResults = (ListView) v.findViewById(R.id.lvSearchResults);
 
         final EditText etSearch= (EditText) v.findViewById(R.id.etSearch);
@@ -108,41 +117,64 @@ public class AddOrRemoveUserActivity extends AppCompatActivity {
             }
         });
 
+        lvSearchResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                AddUserToMainList(dialogUserList.get(i));
+                dialog.dismiss();
+            }
+        });
+
         dialog.show();
     }
 
     public void SaveChanges(View view) {
-
+        Toast.makeText(getApplicationContext(), "Saving Changes Please Wait", Toast.LENGTH_SHORT).show();
+        if (club != null) {
+            club.put(userType, userList);
+            club.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+                        Toast.makeText(getApplicationContext(), "Admins Changed", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
     }
 
     private void ShowCurrentUserList() {
         if (club != null) {
-            List<String> userIds = club.getList("admins");
+            List<String> userIds = club.getList(userType);
             ParseQuery<ParseUser> query = ParseUser.getQuery();
             query.whereContainedIn("objectId", userIds);
             query.findInBackground(new FindCallback<ParseUser>() {
                 @Override
                 public void done(List<ParseUser> objects, ParseException e) {
                     if (objects.size() > 0 && e == null) {
-                        userList = objects;
                         final ListView lvUserList = (ListView) findViewById(R.id.lvUserList);
-                        final List<Map<String, String>> userListData = new ArrayList<Map<String, String>>();
+                        userListData = new ArrayList<Map<String, String>>();
+                        userList = new ArrayList<String>();
 
-                        for (ParseUser user: userList) {
+                        for (ParseUser user: objects) {
                             Map<String, String> userData = new HashMap<String, String>();
                             userData.put("username", user.getUsername());
                             userData.put("fullName", user.get("fullName").toString());
                             userListData.add(userData);
+                            userList.add(user.getObjectId());
                         }
 
-                        final SimpleAdapter simpleAdapter = new SimpleAdapter(
+                        lvUserListAdapter = new SimpleAdapter(
                                 AddOrRemoveUserActivity.this,
                                 userListData,
                                 android.R.layout.simple_list_item_2,
                                 new String[] {"username", "fullName"},
                                 new int[] {android.R.id.text1, android.R.id.text2}
                         );
-                        lvUserList.setAdapter(simpleAdapter);
+                        lvUserList.setAdapter(lvUserListAdapter);
 
                         if (userListData.size() > 6) {
                             ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) lvUserList.getLayoutParams();
@@ -192,7 +224,7 @@ public class AddOrRemoveUserActivity extends AppCompatActivity {
             else {
                 query = ParseUser.getQuery();
             }
-            query.whereNotContainedIn("objectId", club.getList(userType));
+            query.whereNotContainedIn("objectId", userList);
             query.setLimit(15);
 
             query.findInBackground(new FindCallback<ParseUser>() {
@@ -252,5 +284,18 @@ public class AddOrRemoveUserActivity extends AppCompatActivity {
             }
         }
         return result;
+    }
+
+    private void AddUserToMainList(ParseUser user) {
+        if (newUsers == null) {
+            newUsers = new ArrayList<ParseUser>();
+        }
+        newUsers.add(user);
+        userList.add(user.getObjectId());
+        Map<String, String> userData = new HashMap<String, String>();
+        userData.put("username", user.getUsername());
+        userData.put("fullName", user.get("fullName").toString());
+        userListData.add(userData);
+        lvUserListAdapter.notifyDataSetChanged();
     }
 }
